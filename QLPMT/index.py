@@ -21,6 +21,7 @@ def online_register():
         DiaChi = request.form['address']
         if dao.count_patient() < 40:
             dao.online_register(HoTen=HoTen, GioiTinh=GioiTinh, NamSinh=NamSinh, DiaChi=DiaChi, DanhSachKham_id=1)
+            err_msg = 'Đăng ký khám thành công'
         else:
             err_msg = 'Đăng ký không thành công vì vượt quá bệnh nhân khám trong ngày'
     return render_template('online_register.html', err_msg=err_msg)

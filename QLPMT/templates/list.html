@@ -24,18 +24,13 @@
         <label for="address">Địa chỉ</label>
     </div>
 
-    {% if err_msg %}
-    <div class="alert alert-danger">
+    <div class="alert alert-danger" id="infor">
         {{err_msg}}
     </div>
-    {% else %}
-    <div class="alert alert-danger">
-        Đăng ký thành công
-    </div>
-    {% endif %}
+
 
     <div>
-        <input type="submit" value="Đăng ký" class="btn btn-danger"/>
+        <input type="submit" value="Đăng ký" class="btn btn-danger" onClick="showError()"/>
     </div>
 </form>
 

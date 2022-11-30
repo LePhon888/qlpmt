@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 class="text-center text-success">ĐĂNG KÝ KHÁM TRỰC TUYẾN</h1>
-<form method="post" enctype="multipart/form-data" action="/online-register">
+<form id="myFormId" method="post" enctype="multipart/form-data" action="/online-register">
     <div class="form-floating mb-3 mt-3">
         <input type="text" class="form-control" required id="name" placeholder="Nhập họ tên" name="name">
         <label for="name">Họ tên</label>
@@ -22,17 +22,11 @@
         <input type="text" class="form-control" required id="address" placeholder="Nhập địa chỉ" name="address">
         <label for="address">Địa chỉ</label>
     </div>
-    {% if err_msg %}
-    <div class="alert alert-danger">
+    <div class="alert alert-danger" id="infor" style="display:none">
         {{err_msg}}
     </div>
-    {% else %}
-    <div class="alert alert-danger">
-        Đăng ký thành công
-    </div>
-    {% endif %}
     <div>
-        <input type="submit" value="Đăng ký" class="btn btn-danger"/>
+        <input type="submit" value="Đăng ký" class="btn btn-danger" onclick="showError()"/>
     </div>
 </form>
 {% endblock %}

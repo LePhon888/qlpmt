@@ -1,4 +1,4 @@
-from QLPMT.models import User, BenhNhan, DanhSachKham, UserRole, UserLogin, PhieuKhamBenh
+from QLPMT.models import User, BenhNhan, DanhSachKham, UserRole, PhieuKhamBenh
 from QLPMT import db
 import hashlib
 
@@ -19,12 +19,12 @@ def load_BenhNhan():
 
 def auth_user(username, password):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    return UserLogin.query.filter(UserLogin.username.__eq__(username.strip()),
-                                  UserLogin.password.__eq__(password)).first()
+    return User.query.filter(User.username.__eq__(username.strip()),
+                                  User.password.__eq__(password)).first()
 
 
 def get_user_by_id(user_id):
-    return UserLogin.query.get(user_id)
+    return User.query.get(user_id)
 
 
 def get_phieukhambenn(id):
@@ -39,7 +39,7 @@ def register(name, username, password, avatar, type):
     elif type == 'cashier':
         type = UserRole.CASHIER
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    u = UserLogin(name=name, username=username.strip(),
+    u = User(name=name, username=username.strip(),
                   password=password, image=avatar, user_role=type)
     db.session.add(u)
     db.session.commit()
