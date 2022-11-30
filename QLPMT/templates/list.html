@@ -1,0 +1,75 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+{% if current_user.user_role.name == 'NURSE' %}
+<h1>Lập danh sách khám</h1>
+<form method="post" enctype="multipart/form-data" action="/list">
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" required id="name" placeholder="Nhập họ tên" name="name">
+        <label for="name">Họ tên</label>
+    </div>
+
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" required id="sex" placeholder="Nhập giới tính" name="sex">
+        <label for="sex">Giới tính</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+        <input type="text" class="form-control" required id="year" placeholder="Nhập năm sinh" name="year">
+        <label for="year">Năm sinh</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+        <input type="text" class="form-control" required id="address" placeholder="Nhập địa chỉ" name="address">
+        <label for="address">Địa chỉ</label>
+    </div>
+
+    {% if err_msg %}
+    <div class="alert alert-danger">
+        {{err_msg}}
+    </div>
+    {% else %}
+    <div class="alert alert-danger">
+        Đăng ký thành công
+    </div>
+    {% endif %}
+
+    <div>
+        <input type="submit" value="Đăng ký" class="btn btn-danger"/>
+    </div>
+</form>
+
+<div class="container mt-3">
+    <h2>Danh sách khám</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Stt</th>
+            <th>Họ Tên</th>
+            <th>Giới tính</th>
+            <th>Năm sinh</th>
+            <th>Địa chỉ</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for b in benhnhan %}
+
+        <tr>
+            <td>{{b.id}}</td>
+            <td>{{b.HoTen}}</td>
+            <td>{{b.GioiTinh}}</td>
+            <td>{{b.NamSinh}}</td>
+            <td>{{b.DiaChi}}</td>
+
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+{% else %}
+<h1 class="text-danger">Vui lòng đăng nhập tài khoản y tá để lập danh sách khám</h1>
+{% endif %}
+
+{% endblock %}

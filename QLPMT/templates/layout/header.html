@@ -1,0 +1,51 @@
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">QUẢN LÝ PHÒNG MẠCH TƯ</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Trang chủ</a>
+                </li>
+                {% if not current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/online-register">Đăng ký khám trực tuyến</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/list">Lập danh sách khám</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/medical_report">Lập phiếu khám bệnh</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/get_id">Lập hóa đơn</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link text-success" href="/">
+                        <img src="{{ current_user.image }}" width="40" class="rounded-circle"
+                             alt="{{ current_user.name }}"/>
+                        Chào {{ current_user.name }} <br>
+                        {{current_user.user_role.name}}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="/logout">Đăng xuất</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link text-success" href="/login">Đăng nhập</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="/register">Đăng ký</a>
+                </li>
+                {% endif %}
+
+
+            </ul>
+        </div>
+    </div>
+</nav>

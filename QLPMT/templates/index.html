@@ -1,0 +1,9 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+<h1 class="text-danger">Chào mừng đến với phòng mạch tư</h1>
+
+{% endif %}
+
+{% endblock %}
