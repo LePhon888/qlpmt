@@ -151,7 +151,6 @@ class Thuoc(BaseModel):
     __tablename__ = 'Thuoc'
 
     DonGia = Column(Integer, nullable=False)
-    SoLuongConLai = Column(Integer, nullable=False)
     DonVi_id = Column(Integer, ForeignKey(DonVi.id), nullable=False)
     LoaiThuoc_id = Column(Integer, ForeignKey(LoaiThuoc.id), nullable=False)
 
