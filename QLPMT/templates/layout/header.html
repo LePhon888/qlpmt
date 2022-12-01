@@ -13,7 +13,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/online-register">Đăng ký khám trực tuyến</a>
                 </li>
-                {% endif %}
+                {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="/list">Lập danh sách khám</a>
                 </li>
@@ -23,6 +23,8 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/get_id">Lập hóa đơn</a>
                 </li>
+                                {% endif %}
+
                 {% if current_user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link text-success" href="/">

@@ -35,7 +35,6 @@ class User(BaseModel, UserMixin):
     ThuNgan = relationship('ThuNgan', backref='user', lazy=True)
     NguoiQuanTri = relationship('NguoiQuanTri', backref='user', lazy=True)
 
-
     def __str__(self):
         return self.name
 
@@ -221,13 +220,11 @@ if __name__ == '__main__':
         # db.session.add_all([hd])
         # db.session.commit()
 
-
         # b1 = BenhNhan(HoTen='Nguyen Thi Anh', GioiTinh='Nam',
         #               NamSinh='2002', DiaChi='Go Vap', DanhSachKham_id=1)
         #
         # db.session.add_all([b1])
         # db.session.commit()
-
 
         # p1 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
         #                    BacSi_id=1, BenhNhan_id=1, HoaDon_id=1)
@@ -238,4 +235,147 @@ if __name__ == '__main__':
         # db.session.add_all([p1, p2, p3])
         # db.session.commit()
 
+        # dv1 = DonVi(TenDonVi='Vien')
+        # dv2 = DonVi(TenDonVi='Chai')
+        # dv3 = DonVi(TenDonVi='Vy')
+        # db.session.add_all([dv1, dv2, dv3])
+        # db.session.commit()
+        #
+        # lt1 = LoaiThuoc(TenLoaiThuoc="Paracetamol ")
+        # lt2 = LoaiThuoc(TenLoaiThuoc="Tylenol")
+        # lt3 = LoaiThuoc(TenLoaiThuoc="Hapacol")
+        # lt4 = LoaiThuoc(TenLoaiThuoc="Efferalgant")
+        # lt5 = LoaiThuoc(TenLoaiThuoc="Ibuprofen")
+        # lt6 = LoaiThuoc(TenLoaiThuoc="Mobic")
+        # lt7 = LoaiThuoc(TenLoaiThuoc="Alexan")
+        # lt8 = LoaiThuoc(TenLoaiThuoc="Smecta")
+        # lt9 = LoaiThuoc(TenLoaiThuoc="Motilum")
+        # lt10 = LoaiThuoc(TenLoaiThuoc="Becberin")
+        # lt11 = LoaiThuoc(TenLoaiThuoc="Loratadine")
+        # lt12 = LoaiThuoc(TenLoaiThuoc="Betadine")
+        # lt13 = LoaiThuoc(TenLoaiThuoc="Ketamine")
+        # lt14 = LoaiThuoc(TenLoaiThuoc="Natufib")
+        # lt15 = LoaiThuoc(TenLoaiThuoc="Optibac")
+        # lt16 = LoaiThuoc(TenLoaiThuoc="Acetaminophen")
+        # lt17 = LoaiThuoc(TenLoaiThuoc="Panadol Extra")
+        # lt18 = LoaiThuoc(TenLoaiThuoc="V Rohto")
+        # lt19 = LoaiThuoc(TenLoaiThuoc="Panthenol")
+        # lt20 = LoaiThuoc(TenLoaiThuoc="Hidrasec")
+        # lt21 = LoaiThuoc(TenLoaiThuoc="Amoxicillin ")
+        # lt22 = LoaiThuoc(TenLoaiThuoc="Neocodion")
+        # lt23 = LoaiThuoc(TenLoaiThuoc="Omeprazol")
+        # lt24 = LoaiThuoc(TenLoaiThuoc="Docxycyclin")
+        # lt25 = LoaiThuoc(TenLoaiThuoc="Cefnidir ")
+        # lt26 = LoaiThuoc(TenLoaiThuoc="Cefpodoxime")
+        # lt27 = LoaiThuoc(TenLoaiThuoc="Celecoxib")
+        # lt28 = LoaiThuoc(TenLoaiThuoc="Piroxicam")
+        # lt29 = LoaiThuoc(TenLoaiThuoc="Prednisolon")
+        # lt30 = LoaiThuoc(TenLoaiThuoc="Methylprednisolon")
+        #
+        # db.session.add_all([lt1,
+        #                     lt2,
+        #                     lt3,
+        #                     lt4,
+        #                     lt5,
+        #                     lt6,
+        #                     lt7,
+        #                     lt8,
+        #                     lt9,
+        #                     lt10,
+        #                     lt11,
+        #                     lt12,
+        #                     lt13,
+        #                     lt14,
+        #                     lt15,
+        #                     lt16,
+        #                     lt17,
+        #                     lt18,
+        #                     lt19,
+        #                     lt20,
+        #                     lt21,
+        #                     lt22,
+        #                     lt23,
+        #                     lt24,
+        #                     lt25,
+        #                     lt26,
+        #                     lt27,
+        #                     lt28,
+        #                     lt29,
+        #                     lt30])
+        # db.session.commit()
 
+        # t1 = Thuoc(DonGia=20000, DonVi_id=1, LoaiThuoc_id=15)
+        # t2 = Thuoc(DonGia=22000, DonVi_id=1, LoaiThuoc_id=16)
+        # t3 = Thuoc(DonGia=23000, DonVi_id=1, LoaiThuoc_id=17)
+        # t4 = Thuoc(DonGia=23000, DonVi_id=1, LoaiThuoc_id=18)
+        # t5 = Thuoc(DonGia=32000, DonVi_id=1, LoaiThuoc_id=19)
+        # t6 = Thuoc(DonGia=32000, DonVi_id=1, LoaiThuoc_id=20)
+        # t7 = Thuoc(DonGia=32000, DonVi_id=1, LoaiThuoc_id=21)
+        # t8 = Thuoc(DonGia=32000, DonVi_id=1, LoaiThuoc_id=22)
+        # t9 = Thuoc(DonGia=32000, DonVi_id=1, LoaiThuoc_id=23)
+        # t10 = Thuoc(DonGia=32000, DonVi_id=1, LoaiThuoc_id=24)
+        # t11 = Thuoc(DonGia=32000, DonVi_id=1, LoaiThuoc_id=25)
+        # t12 = Thuoc(DonGia=32000, DonVi_id=2, LoaiThuoc_id=26)
+        # t13 = Thuoc(DonGia=32000, DonVi_id=2, LoaiThuoc_id=27)
+        # t14 = Thuoc(DonGia=32000, DonVi_id=2, LoaiThuoc_id=28)
+        # t15 = Thuoc(DonGia=32000, DonVi_id=2, LoaiThuoc_id=29)
+        # t16 = Thuoc(DonGia=32000, DonVi_id=3, LoaiThuoc_id=30)
+        #
+        # db.session.add_all([t1,
+        #                     t2,
+        #                     t3,
+        #                     t4,
+        #                     t5,
+        #                     t6,
+        #                     t7,
+        #                     t8,
+        #                     t9,
+        #                     t10,
+        #                     t11,
+        #                     t12,
+        #                     t13,
+        #                     t14,
+        #                     t15,
+        #                     t16
+        #                     ])
+        # db.session.commit()
+
+        # ctpk1 = ChiTietPhieuKhamBenh(SoLuong=12, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=1, Thuoc_id=1)
+        # ctpk2 = ChiTietPhieuKhamBenh(SoLuong=22, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=1, Thuoc_id=2)
+        # ctpk3 = ChiTietPhieuKhamBenh(SoLuong=14, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=1, Thuoc_id=3)
+        # ctpk4 = ChiTietPhieuKhamBenh(SoLuong=17, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=2, Thuoc_id=12)
+        # ctpk1 = ChiTietPhieuKhamBenh(SoLuong=15, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=2, Thuoc_id=15)
+        # ctpk2 = ChiTietPhieuKhamBenh(SoLuong=15, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=2, Thuoc_id=20)
+        # ctpk3 = ChiTietPhieuKhamBenh(SoLuong=14, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=3, Thuoc_id=23)
+        # ctpk4 = ChiTietPhieuKhamBenh(SoLuong=11, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=3, Thuoc_id=4)
+        # ctpk1 = ChiTietPhieuKhamBenh(SoLuong=8, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=3, Thuoc_id=22)
+        # ctpk2 = ChiTietPhieuKhamBenh(SoLuong=18, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=3, Thuoc_id=23)
+        # ctpk3 = ChiTietPhieuKhamBenh(SoLuong=12, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=3, Thuoc_id=12)
+        # ctpk4 = ChiTietPhieuKhamBenh(SoLuong=20, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=3, Thuoc_id=28)
+        #
+        # db.session.add_all([ctpk1,
+        #                     ctpk2,
+        #                     ctpk3,
+        #                     ctpk4,
+        #                     ctpk1,
+        #                     ctpk2,
+        #                     ctpk3,
+        #                     ctpk4,
+        #                     ctpk1,
+        #                     ctpk2,
+        #                     ctpk3,
+        #                     ctpk4
+        #                     ])
+        # db.session.commit()
