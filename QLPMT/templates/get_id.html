@@ -3,10 +3,13 @@
 {% block content %}
 {% if current_user.user_role.name == 'CASHIER' %}
 <form method="post" enctype="multipart/form-data" action="/get_id">
+    <br>
+     <p>Ngày khám: <span>{{new_today_date}}</span></p>
     <div class="form-floating mb-3 mt-3">
         <input type="text" class="form-control" required id="id" placeholder="Nhập mã bệnh nhân" name="id">
         <label for="id">Nhập mã bệnh nhân</label>
     </div>
+
 
     <div>
         <input type="submit" value="Xác nhận" class="btn btn-danger"/>

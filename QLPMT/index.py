@@ -1,3 +1,6 @@
+from datetime import date
+from threading import Timer
+
 from flask import render_template, request, redirect, session, jsonify, url_for
 from QLPMT import app, dao, login
 from flask_login import login_user, logout_user, current_user
@@ -25,6 +28,7 @@ def online_register():
         else:
             err_msg = 'Đăng ký không thành công vì vượt quá bệnh nhân khám trong ngày'
     return render_template('online_register.html', err_msg=err_msg)
+
 
 
 @app.route('/login-admin', methods=['post'])
@@ -127,16 +131,31 @@ def medical_report():
 
 @app.route('/get_id', methods=['get', 'post'])
 def get_id():
+    today = date.today()
+    new_today_date = today.strftime("%d/%m/%Y")
     if request.method.__eq__('POST'):
         id = request.form['id']
         return redirect(url_for('payment_bill', id=id))
-    return render_template('get_id.html')
+    return render_template('get_id.html', new_today_date=new_today_date)
 
 
 @app.route('/payment_bill/<id>')
 def payment_bill(id):
-    phieu = dao.get_phieukhambenn(id=id)
-    return render_template('payment_bill.html', phieu=phieu)
+    tienthuoc = 0
+    ten = dao.get_name(id)
+    ngaykham = dao.get_date(id).strftime("%d/%m/%Y")
+    sophieu = dao.count_bill(id)
+    tienkham = dao.tien_kham()
+    tongtienkham = sophieu * tienkham
+    phieu = dao.get_phieukhambenh(id=id)
+    arr_dongia_soluong = dao.get_don_gia_so_luong(id=id)
+    for chitietphieukham, phieu, thuoc in arr_dongia_soluong:
+        tienthuoc += chitietphieukham.SoLuong * thuoc.DonGia
+    return render_template('payment_bill.html',
+                           phieu=phieu, ten=ten,
+                           ngaykham=ngaykham,
+                           tongtienkham=tongtienkham,
+                           tienthuoc=tienthuoc)
 
 
 @login.user_loader

@@ -5,7 +5,7 @@ from flask_login import current_user
 from wtforms import TextAreaField
 from wtforms.widgets import TextArea
 
-admin = Admin(app=app, name='QUẢN TRỊ BÁN HÀNG', template_mode='bootstrap4')
+admin = Admin(app=app, name='QUẢN TRỊ PHÒNG MẠCH TƯ', template_mode='bootstrap4')
 
 
 class CKTextAreaWidget(TextArea):
@@ -21,24 +21,11 @@ class CKTextAreaField(TextAreaField):
     widget = CKTextAreaWidget()
 
 
-class ProductView(ModelView):
-    column_searchable_list = ['name', 'description']
-    column_filters = ['name', 'price']
-    can_view_details = True
-    can_export = True
-    column_exclude_list = ['image']
+class QuyDinhSoTienKham(ModelView):
     column_labels = {
-        'name': 'Tên sản phẩm',
-        'description': 'Mô tả',
-        'price': 'Gía'
-    }
-    extra_js = ['//cdn.ckeditor.com/4.6.0/standard/ckeditor.js']
-    form_overrides = {
-        'description': CKTextAreaField
-    }
+        'name': 'Số tiền khám',
+            }
 
-    def is_accessible(self):
-        return current_user.is_authenticated
 
 
 class StatsView(BaseView):
@@ -49,3 +36,4 @@ class StatsView(BaseView):
 
 
 admin.add_view(StatsView(name='Thông kê'))
+admin.add_view(QuyDinhSoTienKham(QuyDinhSoTienKham, db.session, name='Số tiền khám'))
