@@ -177,7 +177,7 @@ class QuyDinhSoBenhNhaKhamTrongNgay(BaseModel):
 
 if __name__ == '__main__':
     with app.app_context():
-        # db.create_all()
+        db.create_all()
         #
         # import hashlib
         #
@@ -372,8 +372,8 @@ if __name__ == '__main__':
         #
         # ctpk1 = ChiTietPhieuKhamBenh(SoLuong=12, CachDung="Sang trua chieu",
         #                              PhieuKhamBenh_id=1, Thuoc_id=1)
-        ctpk2 = ChiTietPhieuKhamBenh(SoLuong=22, CachDung="Sang trua chieu",
-                                     PhieuKhamBenh_id=2, Thuoc_id=2)
+        # ctpk2 = ChiTietPhieuKhamBenh(SoLuong=22, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=2, Thuoc_id=2)
         # ctpk3 = ChiTietPhieuKhamBenh(SoLuong=14, CachDung="Sang trua chieu",
         #                              PhieuKhamBenh_id=3, Thuoc_id=3)
         # ctpk4 = ChiTietPhieuKhamBenh(SoLuong=17, CachDung="Sang trua chieu",
@@ -395,8 +395,8 @@ if __name__ == '__main__':
         # ctpk12 = ChiTietPhieuKhamBenh(SoLuong=20, CachDung="Sang trua chieu",
         #                              PhieuKhamBenh_id=3, Thuoc_id=28)
         #
-        db.session.add_all([
-                            ctpk2,
-
-                            ])
-        db.session.commit()
+        # db.session.add_all([
+        #                     ctpk2,
+        #
+        #                     ])
+        # db.session.commit()

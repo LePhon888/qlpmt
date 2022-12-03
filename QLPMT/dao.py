@@ -2,9 +2,13 @@ from flask import session
 from flask_sqlalchemy.session import Session
 
 from QLPMT.models import User, BenhNhan, DanhSachKham, UserRole, PhieuKhamBenh, QuyDinhSoTienKham, ChiTietPhieuKhamBenh, \
-    Thuoc
+    Thuoc, QuyDinhSoBenhNhaKhamTrongNgay
 from QLPMT import db
 import hashlib
+
+def get_so_luong_benh_nhan_kham_trong_ngay():
+    return db.session.query(QuyDinhSoBenhNhaKhamTrongNgay).order_by(QuyDinhSoTienKham.id.desc()).first().SoTienKham
+
 
 
 def online_register(HoTen, GioiTinh, NamSinh, DiaChi, DanhSachKham_id):

@@ -22,9 +22,11 @@
         <input type="text" class="form-control" required id="address" placeholder="Nhập địa chỉ" name="address">
         <label for="address">Địa chỉ</label>
     </div>
-    <div class="alert alert-danger" id="infor" style="display:none">
+    {% if err_msg %}
+    <div class="alert alert-danger">
         {{err_msg}}
     </div>
+    {% endif %}
     <div>
         <input type="submit" value="Đăng ký" class="btn btn-danger" onclick="showError()"/>
     </div>

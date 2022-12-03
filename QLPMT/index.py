@@ -22,13 +22,12 @@ def online_register():
         GioiTinh = request.form['sex']
         NamSinh = request.form['year']
         DiaChi = request.form['address']
-        if dao.count_patient() < 40:
+        if dao.count_patient() < dao.get_so_luong_benh_nhan_kham_trong_ngay():
             dao.online_register(HoTen=HoTen, GioiTinh=GioiTinh, NamSinh=NamSinh, DiaChi=DiaChi, DanhSachKham_id=1)
             err_msg = 'Đăng ký khám thành công'
         else:
             err_msg = 'Đăng ký không thành công vì vượt quá bệnh nhân khám trong ngày'
     return render_template('online_register.html', err_msg=err_msg)
-
 
 
 @app.route('/login-admin', methods=['post'])
@@ -100,15 +99,15 @@ def medical_list():
     if current_user.is_authenticated:
         err_msg = ''
         b = dao.load_BenhNhan()
-
         if request.method.__eq__('POST'):
             HoTen = request.form['name']
             GioiTinh = request.form['sex']
             NamSinh = request.form['year']
             DiaChi = request.form['address']
-            if dao.count_patient() < 40:
+            if dao.count_patient() < dao.get_so_luong_benh_nhan_kham_trong_ngay():
                 dao.online_register(HoTen=HoTen, GioiTinh=GioiTinh, NamSinh=NamSinh, DiaChi=DiaChi, DanhSachKham_id=1)
                 err_msg = 'Đăng ký khám thành công'
+                b = dao.load_BenhNhan()
             else:
                 err_msg = 'Vượt quá bệnh nhân khám trong ngày'
         return render_template('list.html', err_msg=err_msg, benhnhan=b)
@@ -129,34 +128,38 @@ def medical_report():
         render_template('index.html')
 
 
-@app.route('/get_id', methods=['get', 'post'])
-def get_id():
+
+@app.route('/payment_bill', methods=['get', 'post'])
+def payment_bill():
+    err_msg = ''
     today = date.today()
     new_today_date = today.strftime("%d/%m/%Y")
+    ngaykham = ''
     if request.method.__eq__('POST'):
         id = request.form['id']
-        return redirect(url_for('payment_bill', id=id))
-    return render_template('get_id.html', new_today_date=new_today_date)
+        tienthuoc = 0
+        ten = dao.get_name(id)
+        sophieu = dao.count_bill(id)
+        tienkham = dao.tien_kham()
+        tongtienkham = sophieu * tienkham
+        try:
+            ngaykham = dao.get_date(id).strftime("%d/%m/%Y")
+            arr_dongia_soluong = dao.get_don_gia_so_luong(id=id)
+            for chitietphieukham, phieu, thuoc in arr_dongia_soluong:
+                tienthuoc += chitietphieukham.SoLuong * thuoc.DonGia
+        except:
+            err_msg = 'Không tìm thấy phiếu khám bệnh của bệnh nhân'
 
-
-@app.route('/payment_bill/<id>')
-def payment_bill(id):
-    tienthuoc = 0
-    ten = dao.get_name(id)
-    ngaykham = dao.get_date(id).strftime("%d/%m/%Y")
-    sophieu = dao.count_bill(id)
-    tienkham = dao.tien_kham()
-    tongtienkham = sophieu * tienkham
-    phieu = dao.get_phieukhambenh(id=id)
-    arr_dongia_soluong = dao.get_don_gia_so_luong(id=id)
-    for chitietphieukham, phieu, thuoc in arr_dongia_soluong:
-        tienthuoc += chitietphieukham.SoLuong * thuoc.DonGia
-    return render_template('payment_bill.html',
-                           phieu=phieu, ten=ten,
+        tongtien=tongtienkham+tienthuoc
+        return render_template('payment_bill.html',
+                           ten=ten,
                            ngaykham=ngaykham,
                            tongtienkham=tongtienkham,
-                           tienthuoc=tienthuoc)
-
+                           tienthuoc=tienthuoc,
+                           new_today_date=new_today_date,
+                            tongtien=tongtien,
+                               err_msg=err_msg)
+    return render_template('payment_bill.html', new_today_date=new_today_date)
 
 @login.user_loader
 def load_user(user_id):
@@ -164,4 +167,5 @@ def load_user(user_id):
 
 
 if __name__ == "__main__":
+    from QLPMT.admin import *
     app.run(debug=True)

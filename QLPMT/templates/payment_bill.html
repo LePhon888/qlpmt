@@ -1,7 +1,22 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-<div class="container" style="margin:30px">
+<form method="post" enctype="multipart/form-data" action="/payment_bill">
+    <br>
+     <p>Ngày khám: <span>{{new_today_date}}</span></p>
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" required id="id" placeholder="Nhập mã bệnh nhân" name="id">
+        <label for="id">Nhập mã bệnh nhân</label>
+    </div>
+
+
+    <div>
+        <input type="submit" value="Xác nhận" class="btn btn-danger"/>
+    </div>
+</form>
+<p class="text-danger">{{err_msg}}</p>
+{% if tongtienkham and not err_msg%}
+<div class="container" style="margin:30px; width:60%; margin:auto">
     <table class="table table-bordered">
         <thead>
         <tr>
@@ -18,12 +33,12 @@
             <td>Tiền thuốc: {{"{:,}".format(tienthuoc)}} VNĐ</td>
         </tr>
         <tr>
-            <td colspan="2">Tổng tiền: {{"{:,}".format(tongtienkham+tienthuoc)}} VNĐ</td>
+            <td colspan="2">Tổng tiền: {{"{:,}".format(tongtien)}} VNĐ</td>
         </tr>
         </tr>
         </tbody>
     </table>
 </div>
-
+{% endif %}
 
 {% endblock %}

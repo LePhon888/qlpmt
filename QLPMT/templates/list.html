@@ -24,9 +24,11 @@
         <label for="address">Địa chỉ</label>
     </div>
 
+    {% if err_msg %}
     <div class="alert alert-danger" id="infor">
         {{err_msg}}
     </div>
+    {% endif %}
 
 
     <div>
