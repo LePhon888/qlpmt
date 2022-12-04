@@ -171,14 +171,14 @@ class ChiTietPhieuKhamBenh(BaseModel):
 class QuyDinhSoBenhNhaKhamTrongNgay(BaseModel):
     __tablename__ = 'SoBenhNhaKhamTrongNgay'
 
-    SoBenhNhaKhamTrongNgay = Column(Integer, nullable=False)
+    SoBenhNhanKhamTrongNgay = Column(Integer, nullable=False)
     NguoiQuanTri_id = Column(Integer, ForeignKey(NguoiQuanTri.id), nullable=False)
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        #
+
         # import hashlib
         #
         # password = str(hashlib.md5('123456'.encode('utf-8')).hexdigest())
@@ -237,7 +237,7 @@ if __name__ == '__main__':
         #                    BacSi_id=1, BenhNhan_id=1, HoaDon_id=1)
         # db.session.add_all([p1, p2, p3])
         # db.session.commit()
-
+        #
         # dv1 = DonVi(TenDonVi='Vien')
         # dv2 = DonVi(TenDonVi='Chai')
         # dv3 = DonVi(TenDonVi='Vy')
@@ -396,7 +396,18 @@ if __name__ == '__main__':
         #                              PhieuKhamBenh_id=3, Thuoc_id=28)
         #
         # db.session.add_all([
-        #                     ctpk2,
+        #     ctpk1,
+        #     ctpk2,
+        #     ctpk3,
+        #     ctpk4,
+        #     ctpk5,
+        #     ctpk6,
+        #     ctpk7,
+        #     ctpk8,
+        #     ctpk9,
+        #     ctpk10,
+        #     ctpk11,
+        #     ctpk12
         #
-        #                     ])
+        # ])
         # db.session.commit()

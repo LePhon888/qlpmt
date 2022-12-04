@@ -7,7 +7,9 @@ from QLPMT import db
 import hashlib
 
 def get_so_luong_benh_nhan_kham_trong_ngay():
-    return db.session.query(QuyDinhSoBenhNhaKhamTrongNgay).order_by(QuyDinhSoTienKham.id.desc()).first().SoTienKham
+    return db.session.query(QuyDinhSoBenhNhaKhamTrongNgay)\
+        .order_by(QuyDinhSoBenhNhaKhamTrongNgay.id.desc()).first().SoBenhNhanKhamTrongNgay
+
 
 
 
