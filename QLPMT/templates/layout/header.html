@@ -13,17 +13,19 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/online-register">Đăng ký khám trực tuyến</a>
                 </li>
-                {% else %}
+                {% elif current_user.user_role.name == 'NURSE'%}
                 <li class="nav-item">
-                    <a class="nav-link" href="/list">Lập danh sách khám</a>
+                    <a class="nav-link" href="/medical_list">Lập danh sách khám</a>
                 </li>
+                {% elif current_user.user_role.name == 'DOCTOR' %}
                 <li class="nav-item">
                     <a class="nav-link" href="/medical_report">Lập phiếu khám bệnh</a>
                 </li>
+                {% elif current_user.user_role.name == 'CASHIER' %}
                 <li class="nav-item">
                     <a class="nav-link" href="/payment_bill">Lập hóa đơn</a>
                 </li>
-                                {% endif %}
+                {% endif %}
 
                 {% if current_user.is_authenticated %}
                 <li class="nav-item">

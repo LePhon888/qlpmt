@@ -1,0 +1,85 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<h1>Lập danh sách khám</h1>
+<form style="width: 50%;" method="post" enctype="multipart/form-data" action="/medical_list">
+    <div class="form-floating mb-3 mt-3">
+        <input type="text" class="form-control" required id="name" placeholder="Nhập họ tên" name="name">
+        <label for="name">Họ tên</label>
+    </div>
+
+    <div style="display: flex;">
+        <label style="margin-right: 20px">Giới tính: </label>
+        <div class="form-check" style="margin-right: 20px">
+            <input type="radio" class="form-check-input" id="male" name="sex" value="Nam" checked>
+            <label class="form-check-label" for="male">Nam</label>
+        </div>
+        <div class="form-check" style="margin-right: 20px">
+            <input type="radio" class="form-check-input" id="female" name="sex" value="Nữ">
+            <label class="form-check-label" for="female">Nữ</label>
+        </div>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+        <input type="text" class="form-control" required id="year" placeholder="Nhập năm sinh" name="year">
+        <label for="year">Năm sinh</label>
+    </div>
+
+    <div class="form-floating mt-3 mb-3">
+        <input type="text" class="form-control" required id="address" placeholder="Nhập địa chỉ" name="address">
+        <label for="address">Địa chỉ</label>
+    </div>
+
+    {% if err_msg %}
+    <div class="alert alert-danger" id="infor">
+        {{err_msg}}
+    </div>
+    {% endif %}
+
+
+    <div>
+        <input type="reset" value="Hủy" class="btn btn-danger"/>
+        <input type="submit" value="Lưu" class="btn btn-success "/>
+    </div>
+</form>
+<br><br>
+<div class="container mt-3">
+    <h2>Danh sách khám</h2>
+    <p>Ngày khám: <span>{{new_today_date}}</span></p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Stt</th>
+            <th>Họ Tên</th>
+            <th>Giới tính</th>
+            <th>Năm sinh</th>
+            <th>Địa chỉ</th>
+            <th></th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for b in benhnhan %}
+        <tr>
+            <td class="number"></td>
+            <td>{{b.HoTen}}</td>
+            <td>{{b.GioiTinh}}</td>
+            <td>{{b.NamSinh}}</td>
+            <td>{{b.DiaChi}}</td>
+            <td>
+                <a href="{{ url_for('medical_list', id=b.id) }}">
+                    <button type="button" class="btn btn-danger" style="width:50px;height:40px"
+                            onclick="SomeDeleteRowFunction(this, '{{b.HoTen}}')">X
+                    </button>
+                </a>
+
+            </td>
+
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

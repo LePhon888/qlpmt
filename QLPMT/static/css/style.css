@@ -2,3 +2,17 @@
     font-family: Tahoma;
 }
 
+.table {
+    counter-reset: row-num;
+}
+
+table .number {
+  counter-increment: row-num;
+}
+table tr .number:first-child::before {
+    content: counter(row-num) "     ";
+}
+
+.number span {
+    margin-right: 60%
+}

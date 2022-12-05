@@ -1,5 +1,6 @@
 from flask import session
 from flask_sqlalchemy.session import Session
+from sqlalchemy import func
 
 from QLPMT.models import User, BenhNhan, DanhSachKham, UserRole, PhieuKhamBenh, QuyDinhSoTienKham, ChiTietPhieuKhamBenh, \
     Thuoc, QuyDinhSoBenhNhaKhamTrongNgay
@@ -8,9 +9,8 @@ import hashlib
 
 def get_so_luong_benh_nhan_kham_trong_ngay():
     return db.session.query(QuyDinhSoBenhNhaKhamTrongNgay)\
-        .order_by(QuyDinhSoBenhNhaKhamTrongNgay.id.desc()).first().SoBenhNhanKhamTrongNgay
-
-
+        .order_by(QuyDinhSoBenhNhaKhamTrongNgay.id.desc()).first()\
+        .SoBenhNhanKhamTrongNgay
 
 
 def online_register(HoTen, GioiTinh, NamSinh, DiaChi, DanhSachKham_id):
@@ -19,12 +19,12 @@ def online_register(HoTen, GioiTinh, NamSinh, DiaChi, DanhSachKham_id):
     db.session.commit()
 
 
-def count_patient():
-    return db.session.query(BenhNhan).count()
+def count_patient(DanhSachKham_id):
+    return db.session.query(func.count(BenhNhan.id)).filter(DanhSachKham_id==DanhSachKham_id).count()
 
 
-def load_BenhNhan():
-    return BenhNhan.query.all()
+def load_BenhNhan(DanhSachKham_id):
+    return BenhNhan.query.filter(BenhNhan.DanhSachKham_id==DanhSachKham_id).all()
 
 
 def auth_user(username, password):
@@ -58,10 +58,30 @@ def tien_kham():
 
 
 def get_don_gia_so_luong(id):
-    q = db.session.query(ChiTietPhieuKhamBenh, PhieuKhamBenh, Thuoc) \
+    return db.session.query(ChiTietPhieuKhamBenh, PhieuKhamBenh, Thuoc) \
         .join(PhieuKhamBenh).join(Thuoc).filter(PhieuKhamBenh.BenhNhan_id == id)
 
-    return q
+
+def get_date_in_danhsachkham():
+    return db.session.query(DanhSachKham) \
+        .order_by(DanhSachKham.id.desc()).first().NgayKham
+
+
+def get_id_danhsachkham():
+    return db.session.query(DanhSachKham) \
+        .order_by(DanhSachKham.id.desc()).first().id
+
+
+def add_danhsachkham(ngaykham):
+    ds = DanhSachKham(NgayKham=ngaykham, YTa_id=1)
+    db.session.add(ds)
+    db.session.commit()
+
+
+def delete_patient(id):
+    b = BenhNhan.query.get(id)
+    db.session.delete(b)
+    db.session.commit()
 
 
 def register(name, username, password, avatar, type):
