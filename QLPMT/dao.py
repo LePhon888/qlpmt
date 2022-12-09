@@ -1,9 +1,10 @@
 from flask import session
 from flask_sqlalchemy.session import Session
-from sqlalchemy import func
+
+from sqlalchemy import func, extract, union
 
 from QLPMT.models import User, BenhNhan, DanhSachKham, UserRole, PhieuKhamBenh, QuyDinhSoTienKham, ChiTietPhieuKhamBenh, \
-    Thuoc, QuyDinhSoBenhNhaKhamTrongNgay
+    Thuoc, QuyDinhSoBenhNhaKhamTrongNgay, HoaDon
 from QLPMT import db
 import hashlib
 
@@ -96,3 +97,60 @@ def register(name, username, password, avatar, type):
              password=password, image=avatar, user_role=type)
     db.session.add(u)
     db.session.commit()
+
+
+
+
+
+def count_patient(month):
+    #ngay sobenhnhan doanhthu
+    return db.session.query(DanhSachKham.NgayKham, func.count(BenhNhan.id))\
+            .join(BenhNhan, BenhNhan.DanhSachKham_id.__eq__(DanhSachKham.id))\
+            .filter(extract('month', DanhSachKham.NgayKham) == month)\
+            .group_by(DanhSachKham.id)\
+            .all()
+
+def get_patient(month):
+     return db.session.query(DanhSachKham.NgayKham, BenhNhan.id,
+                            func.count(PhieuKhamBenh.id)*100000)\
+            .filter(BenhNhan.DanhSachKham_id == DanhSachKham.id)\
+            .filter(extract('month', DanhSachKham.NgayKham) == month) \
+            .filter(PhieuKhamBenh.BenhNhan_id == BenhNhan.id) \
+            .group_by(BenhNhan.id)\
+            .all()
+
+
+def count_phieu():
+    return db.session.query(BenhNhan.id, func.count(PhieuKhamBenh.id)*100000)\
+            .filter(PhieuKhamBenh.BenhNhan_id == BenhNhan.id)\
+            .group_by(BenhNhan.id).all()
+def count_revenue(month):
+    return db.session.query(PhieuKhamBenh.BenhNhan_id, func.count(PhieuKhamBenh.id)*100000)\
+        .filter(extract('month', PhieuKhamBenh.NgayKham) == month)\
+        .group_by(PhieuKhamBenh.BenhNhan_id)\
+        .filter(extract('month', PhieuKhamBenh.NgayKham) == month)\
+        .all()
+
+def get_id_phieukham(id):
+    return db.session.query(ChiTietPhieuKhamBenh.id)\
+            .filter(ChiTietPhieuKhamBenh.PhieuKhamBenh_id == PhieuKhamBenh.id)\
+            .filter(PhieuKhamBenh.BenhNhan_id == id) \
+            .all()
+
+
+def get_dongia(id):
+    return db.session.query(Thuoc.DonGia)\
+            .filter(ChiTietPhieuKhamBenh.PhieuKhamBenh_id==id).all
+
+
+if __name__ == '__main__':
+    from QLPMT import app
+    with app.app_context():
+        # print(count_patient(12))
+        #
+        print(get_patient(12))
+        # print(count_revenue(12))
+        # print(count_phieu())
+        # print(get_id_phieukham(1))
+        # for i in get_id_phieukham(1):
+        #     print(get_dongia(i.id))

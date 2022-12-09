@@ -1,4 +1,6 @@
-from QLPMT import db, app
+from flask  import request
+
+from QLPMT import db, app, dao
 from flask_admin import Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 
@@ -7,8 +9,6 @@ from wtforms import TextAreaField
 from wtforms.widgets import TextArea
 
 from QLPMT.models import QuyDinhSoTienKham, QuyDinhSoBenhNhaKhamTrongNgay, LoaiThuoc, DonVi
-
-admin = Admin(app=app, name='QUẢN TRỊ PHÒNG MẠCH TƯ', template_mode='bootstrap4')
 
 
 class CKTextAreaWidget(TextArea):
@@ -24,39 +24,43 @@ class CKTextAreaField(TextAreaField):
     widget = CKTextAreaWidget()
 
 
-
 class StatsView(BaseView):
     @expose('/')
     def index(self):
-        return self.render('admin/stats.html')
+        month = request.args.get('month')
+        stats = dao.get_patient(month=request.args.get('month'))
+
+        return self.render('admin/stats.html',
+                           stats=stats)
+
 
 class QuyDinhSoTienKhamView(ModelView):
-    can_view_details =  True
+    can_view_details = True
     can_export = True
+
 
 class QuyDinhSoBenhNhaKhamTrongNgayView(ModelView):
-    can_view_details =  True
+    can_view_details = True
     can_export = True
-
 
 
 class LoaiThuocView(ModelView):
     column_display_pk = True
-    can_view_details =  True
+    can_view_details = True
     can_export = True
     column_searchable_list = ['TenLoaiThuoc']
     column_filters = ['TenLoaiThuoc']
 
 
-
 class DonViView(ModelView):
     column_display_pk = True
-    can_view_details =  True
+    can_view_details = True
     can_export = True
     column_searchable_list = ['TenDonVi']
     column_filters = ['TenDonVi']
 
 
+admin = Admin(app=app, name='QUẢN TRỊ PHÒNG MẠCH TƯ', template_mode='bootstrap4')
 
 admin.add_view(QuyDinhSoTienKhamView(QuyDinhSoTienKham, db.session, name='Số tiền khám'))
 admin.add_view(QuyDinhSoBenhNhaKhamTrongNgayView(

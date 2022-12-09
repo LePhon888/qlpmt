@@ -177,7 +177,7 @@ class QuyDinhSoBenhNhaKhamTrongNgay(BaseModel):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        # db.create_all()
 
         # import hashlib
         #
@@ -222,21 +222,21 @@ if __name__ == '__main__':
         # hd = HoaDon(ThuNgan_id=1, SoTienKham_id=1)
         # db.session.add_all([hd])
         # db.session.commit()
-        #
+
         # b1 = BenhNhan(HoTen='Nguyen Thi Anh', GioiTinh='Nam',
         #               NamSinh='2002', DiaChi='Go Vap', DanhSachKham_id=1)
         #
         # db.session.add_all([b1])
         # db.session.commit()
         # #
-        # p1 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
-        #                    BacSi_id=1, BenhNhan_id=1, HoaDon_id=1)
-        # p2 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
-        #                    BacSi_id=1, BenhNhan_id=1, HoaDon_id=1)
-        # p3 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
-        #                    BacSi_id=1, BenhNhan_id=1, HoaDon_id=1)
-        # db.session.add_all([p1, p2, p3])
-        # db.session.commit()
+        p1 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
+                           BacSi_id=1, BenhNhan_id=20, HoaDon_id=2)
+        p2 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
+                           BacSi_id=1, BenhNhan_id=33, HoaDon_id=5)
+        p3 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
+                           BacSi_id=1, BenhNhan_id=34, HoaDon_id=6)
+        db.session.add_all([p1, p2, p3])
+        db.session.commit()
         #
         # dv1 = DonVi(TenDonVi='Vien')
         # dv2 = DonVi(TenDonVi='Chai')
