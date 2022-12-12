@@ -2,16 +2,43 @@
 
 {% block body %}
 <h1 class="text-center text-danger">THỐNG KÊ BÁO CÁO</h1>
+<form action="">
+            <label for="month" class="form-label">Nhập vào tháng: </label>
+            <input style="width: 50%" type="text" class="form-control" id="month" placeholder="Nhập tháng" name="month">
+            <div style="margin: 20px">
+                <input type="submit" value="Thống kê" class="btn btn-info"/>
+            </div>
+        </form>
 
 <div class="row">
     <div class="col-md-5 col-sm-12">
-        <form action="">
-            <label for="month" class="form-label">Nhập vào tháng: </label>
-        <input type="text" class="form-control" id="month" placeholder="Nhập tháng" name="month">
-        <div style="margin: 20px">
-            <input type="submit" value="Thống kê" class="btn btn-info" />
-        </div>
-        </form>
+        <table class="table">
+            <tr>
+                <th>Stt</th>
+                <th>Thuốc</th>
+                <th>Đơn vị tính</th>
+                <th>Số lượng</th>
+                <th>Số lần dùng</th>
+            </tr>
+            {% for t in thuoc %}
+            <tr>
+                <td class="number"></td>
+                <td>{{ t[1] }}</td>
+                <td>{{ t[2] }}</td>
+                <td>{{ t[3] }}</td>
+                <td>{{ t[4] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="col-md-7 col-sm-12">
+        <canvas id="medicineChart"></canvas>
+    </div>
+</div>
+<br><br>
+<div class="row">
+    <div class="col-md-7 col-sm-12">
         <table class="table">
             <tr>
                 <th>Stt</th>
@@ -20,25 +47,27 @@
                 <th>Doanh thu</th>
                 <th>Tỉ lệ</th>
             </tr>
-            {% for s in stats %}
+            {% for r in num_of_patient %}
+            {% set item_1 = num_of_patient[loop.index-1] %}
+            {% set item_2 = revenue[loop.index-1] %}
 
             <tr>
                 <td class="number"></td>
-                <td>{{ s[0].strftime("%d/%m/%Y") }}</td>
-                <td>{{ s[1] }}</td>
-                <td>{{ s[2] }}</td>
-                <td>{{ s[3] }}</td>
+                <td>{{ item_2[0].strftime('%d-%m-%Y') }}</td>
+                <td>{{ item_1[1] }}</td>
+                <td>{{ "{:,}".format(item_2[3]) }}</td>
+                <td>{{ "{:,.2f}".format((item_2[3] / total) * 100) }}%</td>
             </tr>
             {% endfor %}
-
-
         </table>
+        <h3>Tổng doanh thu: {{ "{:,}".format(total) }}</h3>
     </div>
-    <div class="col-md-7 col-sm-12">
 
-        <canvas id="cateChart"></canvas>
+    <div class="col-md-5 col-sm-12">
+        <canvas id="revenueChart"></canvas>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/my-chart.js') }}"></script>
@@ -47,13 +76,25 @@
 <script>
     let labels = []
     let data = []
-    {% for s in stats %}
-    labels.push('{{ s[1] }}')
-    data.push({{ s[2] }})
+    let num = []
+    {% for t in thuoc %}
+    labels.push('{{ t[1] }}')
+    data.push({{ t[4] }})
+    {% endfor %}
+
+    let l = []
+    let d = []
+    {% for r in revenue %}
+    l.push('{{ r[0].strftime('%d-%m-%Y') }}')
+    d.push({{ r[3] }})
     {% endfor %}
 
     window.onload = function() {
-        drawRevenueChart(labels, data)
+        drawMedicineChart(labels, data)
+        drawRevenueChart(l, d)
     }
+
+
+
 </script>
 {% endblock %}

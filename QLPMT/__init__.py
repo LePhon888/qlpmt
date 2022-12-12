@@ -4,6 +4,7 @@ from urllib.parse import quote
 from flask_login import LoginManager
 from flask_babelex import Babel
 import cloudinary
+import babel
 
 app = Flask(__name__)
 app.secret_key = '689567gh$^^&*#%^&*^&%^*DFGH^&*&*^*'
@@ -19,3 +20,10 @@ login = LoginManager(app=app)
 
 babel = Babel(app=app)
 
+@app.template_filter()
+def format_datetime(value, format='medium'):
+    if format == 'full':
+        format="EEEE, d. MMMM y 'at' HH:mm"
+    elif format == 'medium':
+        format="EE dd.MM.y HH:mm"
+    return babel.dates.format_datetime(value, format)

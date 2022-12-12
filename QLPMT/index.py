@@ -17,13 +17,25 @@ def index():
 @app.route('/online-register', methods=['get', 'post'])
 def online_register():
     err_msg = ''
+    today = date.today()
+    new_today_date = today.strftime("%d/%m/%Y")
+    DanhSachKham_id = dao.get_id_danhsachkham()
     if request.method.__eq__('POST'):
+        DanhSachKham_id = dao.get_id_danhsachkham()
+        NgayKhamDsKham = dao.get_date_in_danhsachkham().strftime("%d/%m/%Y")
+        if new_today_date != NgayKhamDsKham:
+            dao.add_danhsachkham(ngaykham=today)
+            DanhSachKham_id = dao.get_id_danhsachkham()
         HoTen = request.form['name']
         GioiTinh = request.form['sex']
         NamSinh = request.form['year']
         DiaChi = request.form['address']
-        if dao.count_patient() < dao.get_so_luong_benh_nhan_kham_trong_ngay():
-            dao.online_register(HoTen=HoTen, GioiTinh=GioiTinh, NamSinh=NamSinh, DiaChi=DiaChi, DanhSachKham_id=1)
+        if dao.count_patient_by_id(DanhSachKham_id=DanhSachKham_id) < dao.get_so_luong_benh_nhan_kham_trong_ngay():
+            dao.online_register(HoTen=HoTen,
+                                GioiTinh=GioiTinh,
+                                NamSinh=NamSinh,
+                                DiaChi=DiaChi,
+                                DanhSachKham_id=DanhSachKham_id)
             err_msg = 'Đăng ký khám thành công'
         else:
             err_msg = 'Đăng ký không thành công vì vượt quá bệnh nhân khám trong ngày'
@@ -60,8 +72,6 @@ def register():
     return render_template('register.html', err_msg=err_msg)
 
 
-
-
 @app.route('/medical_list/', defaults={'id': None}, methods=['get', 'post'])
 @app.route('/medical_list/<int:id>', methods=['get', 'post'])
 @login_required
@@ -89,7 +99,7 @@ def medical_list(id):
             GioiTinh = request.form['sex']
             NamSinh = request.form['year']
             DiaChi = request.form['address']
-            if dao.count_patient(DanhSachKham_id=DanhSachKham_id) < \
+            if dao.count_patient_by_id(DanhSachKham_id=DanhSachKham_id) < \
                     dao.get_so_luong_benh_nhan_kham_trong_ngay():
                 dao.online_register(HoTen=HoTen, GioiTinh=GioiTinh,
                                     NamSinh=NamSinh, DiaChi=DiaChi,
@@ -126,22 +136,28 @@ def payment_bill():
     today = date.today()
     new_today_date = today.strftime("%d/%m/%Y")
     ngaykham = ''
+    tongtienkham = 0
     if request.method.__eq__('POST'):
         id = request.form['id']
         tienthuoc = 0
-        ten = dao.get_name(id)
-        sophieu = dao.count_bill(id)
-        tienkham = dao.tien_kham()
-        tongtienkham = sophieu * tienkham
+        tongtien = 0
+        ten = ''
         try:
-            ngaykham = dao.get_date(id).strftime("%d/%m/%Y")
-            arr_dongia_soluong = dao.get_don_gia_so_luong(id=id)
-            for chitietphieukham, phieu, thuoc in arr_dongia_soluong:
-                tienthuoc += chitietphieukham.SoLuong * thuoc.DonGia
+            ten = dao.get_name(id)
+            sophieu = dao.count_bill(id)
+            tienkham = dao.tien_kham()
+            tongtienkham = sophieu * tienkham
+            try:
+                ngaykham = dao.get_date(id).strftime("%d/%m/%Y")
+                arr_dongia_soluong = dao.get_don_gia_so_luong(id=id)
+                for chitietphieukham, phieu, thuoc in arr_dongia_soluong:
+                    tienthuoc += chitietphieukham.SoLuong * thuoc.DonGia
+                tongtien = tongtienkham + tienthuoc
+            except:
+                err_msg = 'Không tìm thấy phiếu khám bệnh của bệnh nhân'
         except:
-            err_msg = 'Không tìm thấy phiếu khám bệnh của bệnh nhân'
+            err_msg = 'Không tìm thấy bệnh nhân trong hệ thống'
 
-        tongtien = tongtienkham + tienthuoc
         return render_template('payment_bill.html',
                                ten=ten,
                                ngaykham=ngaykham,

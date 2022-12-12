@@ -1,4 +1,5 @@
-from flask  import request
+from calendar import monthrange
+from flask import request
 
 from QLPMT import db, app, dao
 from flask_admin import Admin, BaseView, expose
@@ -28,10 +29,22 @@ class StatsView(BaseView):
     @expose('/')
     def index(self):
         month = request.args.get('month')
-        stats = dao.get_patient(month=request.args.get('month'))
-
+        thuoc = dao.get_thuoc(month)
+        total = 0
+        try:
+            revenue = dao.get_revenue(month)
+        except:
+            pass
+        for r in revenue:
+            total += r[3]
+        num_of_patient = dao.count_patient(month)
         return self.render('admin/stats.html',
-                           stats=stats)
+                           thuoc=thuoc,
+                           revenue=revenue,
+                           num_of_patient=num_of_patient,
+                           total=total)
+
+
 
 
 class QuyDinhSoTienKhamView(ModelView):
