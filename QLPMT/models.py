@@ -177,7 +177,7 @@ class QuyDinhSoBenhNhaKhamTrongNgay(BaseModel):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        # db.create_all()
 
         # import hashlib
         #
@@ -223,8 +223,8 @@ if __name__ == '__main__':
         # db.session.add_all([hd])
         # db.session.commit()
 
-        # b1 = BenhNhan(HoTen='Nguyen Tat Tan', GioiTinh='Nam',
-        #               NamSinh='1989', DiaChi='Quận 5', DanhSachKham_id=4)
+        # b1 = BenhNhan(HoTen='Nguyen Tat Thanh', GioiTinh='Nam',
+        #               NamSinh='1989', DiaChi='Quận 8', DanhSachKham_id=6)
         # b2 = BenhNhan(HoTen='Nguyen Tram Anh', GioiTinh='Nữ',
         #               NamSinh='2000', DiaChi='Tân Phú', DanhSachKham_id=4)
         # b3 = BenhNhan(HoTen='Le Anh Cuong', GioiTinh='Nam',
@@ -240,17 +240,14 @@ if __name__ == '__main__':
         # b8 = BenhNhan(HoTen='Nguyen Tam Phuong', GioiTinh='Nữ',
         #               NamSinh='2002', DiaChi='Go Vap', DanhSachKham_id=1)
         #
-        # db.session.add_all([b1,
-        #                     b2,
-        #                     b3,
-        #                     b4
+        # db.session.add_all([b1
         #                    ])
         # db.session.commit()
         #
-        # p1 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
-        #                    BacSi_id=1, BenhNhan_id=10, HoaDon_id=7)
+        p1 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
+                           BacSi_id=1, BenhNhan_id=34, HoaDon_id=34)
         # p2 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
-        #                    BacSi_id=1, BenhNhan_id=11, HoaDon_id=8)
+        #                    BacSi_id=1, BenhNhan_id=21, HoaDon_id=21)
         # p3 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
         #                    BacSi_id=1, BenhNhan_id=12, HoaDon_id=9)
         # p4 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
@@ -259,14 +256,10 @@ if __name__ == '__main__':
         #                    BacSi_id=1, BenhNhan_id=10, HoaDon_id=7)
         # p6 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
         #                    BacSi_id=1, BenhNhan_id=11, HoaDon_id=8)
-        # db.session.add_all([p1,
-        #                     p2,
-        #                     p3,
-        #                     p4,
-        #                     p5,
-        #                     p6])
-        # db.session.commit()
-        #
+        db.session.add_all([p1
+                            ])
+        db.session.commit()
+
         # dv1 = DonVi(TenDonVi='Vien')
         # dv2 = DonVi(TenDonVi='Chai')
         # dv3 = DonVi(TenDonVi='Vy')
@@ -399,10 +392,10 @@ if __name__ == '__main__':
         #                     ])
         # db.session.commit()
         #
-        # ctpk1 = ChiTietPhieuKhamBenh(SoLuong=12, CachDung="Sang trua chieu",
-        #                              PhieuKhamBenh_id=7, Thuoc_id=1)
+        # ctpk1 = ChiTietPhieuKhamBenh(SoLuong=11, CachDung="Sang trua chieu",
+        #                              PhieuKhamBenh_id=24, Thuoc_id=22)
         # ctpk2 = ChiTietPhieuKhamBenh(SoLuong=22, CachDung="Sang trua chieu",
-        #                              PhieuKhamBenh_id=8, Thuoc_id=2)
+        #                              PhieuKhamBenh_id=25, Thuoc_id=2)
         # ctpk3 = ChiTietPhieuKhamBenh(SoLuong=14, CachDung="Sang trua chieu",
         #                              PhieuKhamBenh_id=9, Thuoc_id=3)
         # ctpk4 = ChiTietPhieuKhamBenh(SoLuong=17, CachDung="Sang trua chieu",
@@ -425,12 +418,7 @@ if __name__ == '__main__':
         #                              PhieuKhamBenh_id=6, Thuoc_id=28)
 
         # db.session.add_all([
-        #     ctpk1,
-        #     ctpk2,
-        #     ctpk3,
-        #     ctpk4,
-        #     ctpk5,
-        #     ctpk6,
+        #     ctpk1, ctpk2
         #
         #
         # ])

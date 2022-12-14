@@ -1,5 +1,6 @@
 from calendar import monthrange
 from flask import request
+from sqlalchemy import exc
 
 from QLPMT import db, app, dao
 from flask_admin import Admin, BaseView, expose
@@ -31,20 +32,19 @@ class StatsView(BaseView):
         month = request.args.get('month')
         thuoc = dao.get_thuoc(month)
         total = 0
-        try:
-            revenue = dao.get_revenue(month)
-        except:
-            pass
+        revenue = dao.get_revenue(month)
+
         for r in revenue:
             total += r[3]
+
+
+
         num_of_patient = dao.count_patient(month)
         return self.render('admin/stats.html',
                            thuoc=thuoc,
                            revenue=revenue,
                            num_of_patient=num_of_patient,
                            total=total)
-
-
 
 
 class QuyDinhSoTienKhamView(ModelView):

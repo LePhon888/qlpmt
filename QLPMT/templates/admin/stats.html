@@ -44,23 +44,22 @@
                 <th>Stt</th>
                 <th>Ngày</th>
                 <th>Số bệnh nhân</th>
-                <th>Doanh thu</th>
+                <th>Doanh thu (VNĐ)</th>
                 <th>Tỉ lệ</th>
             </tr>
             {% for r in num_of_patient %}
             {% set item_1 = num_of_patient[loop.index-1] %}
             {% set item_2 = revenue[loop.index-1] %}
-
             <tr>
                 <td class="number"></td>
                 <td>{{ item_2[0].strftime('%d-%m-%Y') }}</td>
                 <td>{{ item_1[1] }}</td>
-                <td>{{ "{:,}".format(item_2[3]) }}</td>
+                <td>{{ "{:,}".format(item_2[3])}}</td>
                 <td>{{ "{:,.2f}".format((item_2[3] / total) * 100) }}%</td>
             </tr>
             {% endfor %}
         </table>
-        <h3>Tổng doanh thu: {{ "{:,}".format(total) }}</h3>
+        <h3>Tổng doanh thu: {{ "{:,}".format(total) }} VNĐ</h3>
     </div>
 
     <div class="col-md-5 col-sm-12">

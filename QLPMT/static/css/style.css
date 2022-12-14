@@ -16,3 +16,47 @@ table tr .number:first-child::before {
 .number span {
     margin-right: 60%
 }
+
+#################
+
+input::-webkit-calendar-picker-indicator {
+              opacity: 100;
+}
+table{
+    table-layout: auto;
+    white-space: nowrap;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+
+   opacity: 1;
+}
+
+.btn-group-vertical > input{
+    margin-bottom:15px;
+    border-radius:10px !important;
+}
+
+table.table-bordered{
+    border:1px solid grey;
+}
+
+table.table-bordered > tr > td{
+    border:1px solid gray;
+}
+
+.required-field::after {
+  content: "*";
+  color: red;
+  margin-left:2px
+}
+
+.border-right {
+border-right: 1px solid gray;
+height: 320px;
+}
+
+.hidden{
+    display: none;
+}

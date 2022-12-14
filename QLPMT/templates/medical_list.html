@@ -50,6 +50,7 @@
         <thead>
         <tr>
             <th>Stt</th>
+            <th>Mã bệnh nhân</th>
             <th>Họ Tên</th>
             <th>Giới tính</th>
             <th>Năm sinh</th>
@@ -62,6 +63,7 @@
         {% for b in benhnhan %}
         <tr>
             <td class="number"></td>
+            <td>{{b.id}}</td>
             <td>{{b.HoTen}}</td>
             <td>{{b.GioiTinh}}</td>
             <td>{{b.NamSinh}}</td>

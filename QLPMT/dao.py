@@ -4,7 +4,7 @@ from flask_sqlalchemy.session import Session
 from sqlalchemy import func, extract, union
 
 from QLPMT.models import User, BenhNhan, DanhSachKham, UserRole, PhieuKhamBenh, QuyDinhSoTienKham, ChiTietPhieuKhamBenh, \
-    Thuoc, QuyDinhSoBenhNhaKhamTrongNgay, HoaDon, DonVi
+    Thuoc, QuyDinhSoBenhNhaKhamTrongNgay, HoaDon, DonVi, LoaiThuoc
 from QLPMT import db
 import hashlib
 
@@ -80,10 +80,104 @@ def add_danhsachkham(ngaykham):
     db.session.commit()
 
 
+def get_ngaykham_danhsachkham():
+    return db.session.query(DanhSachKham) \
+        .order_by(DanhSachKham.id.desc()).first().NgayKham
+
+
 def delete_patient(id):
     b = BenhNhan.query.get(id)
     db.session.delete(b)
     db.session.commit()
+
+
+# Phieu kham benh
+def add_medical_report(ngaykham, mabenhnhan, trieuchung, dudoanbenh):
+    pk = PhieuKhamBenh(NgayKham=ngaykham, TrieuChung=trieuchung, DuDoanBenh=dudoanbenh, BacSi_id=1,
+                       BenhNhan_id=mabenhnhan, HoaDon_id=1)
+    db.session.add(pk)
+    db.session.commit()
+
+
+def add_detial_medical_report(tenloaithuoc, tenthuoc, soluong, cachdung):
+    thuoc_id = get_med_id(tenthuoc, tenloaithuoc)
+    phieukham_id = (get_medical_report_last_id())
+    ctpkb = ChiTietPhieuKhamBenh(SoLuong=soluong, CachDung=cachdung, PhieuKhamBenh_id=phieukham_id,
+                                 Thuoc_id=thuoc_id)
+    db.session.add(ctpkb)
+    db.session.commit()
+
+
+def load_med_name(med_type=None):
+    if med_type:
+        return Thuoc.query. \
+            filter(Thuoc.LoaiThuoc_id == LoaiThuoc.id).filter(LoaiThuoc.TenLoaiThuoc == med_type).all()
+    return Thuoc.query.all()
+
+
+def load_med_type():
+    return LoaiThuoc.query.all()
+
+
+def load_med_info():
+    return db.session.query(Thuoc, LoaiThuoc, DonVi). \
+        join(LoaiThuoc, Thuoc.LoaiThuoc_id == LoaiThuoc.id). \
+        join(DonVi, Thuoc.DonVi_id == DonVi.id). \
+        order_by(Thuoc.id.asc()).all()
+
+
+def get_med_type_id(med_type):
+    return db.session.query(LoaiThuoc.id).filter(LoaiThuoc.TenLoaiThuoc.__eq__(med_type)).all()
+
+
+def get_med_id(med_name=None, med_type=None):
+    return db.session.query(Thuoc.id).filter(LoaiThuoc.TenLoaiThuoc.__eq__(med_type),
+                                             Thuoc.TenThuoc.__eq__(med_name),
+                                             Thuoc.LoaiThuoc_id.__eq__(LoaiThuoc.id)).scalar()
+
+
+def get_medical_date_of_patient(patient_id):
+    return db.session.query(ChiTietPhieuKhamBenh, PhieuKhamBenh, BenhNhan). \
+        join(PhieuKhamBenh, ChiTietPhieuKhamBenh.PhieuKhamBenh_id.__eq__(PhieuKhamBenh.id)). \
+        join(BenhNhan, PhieuKhamBenh.BenhNhan_id.__eq__(BenhNhan.id)). \
+        filter(BenhNhan.id.__eq__(patient_id)).all()
+
+
+def load_all_medical_report(patient_id, med_date):
+    return db.session.query(ChiTietPhieuKhamBenh, PhieuKhamBenh, BenhNhan, Thuoc, LoaiThuoc, DonVi). \
+        join(PhieuKhamBenh, ChiTietPhieuKhamBenh.PhieuKhamBenh_id.__eq__(PhieuKhamBenh.id), isouter=True). \
+        join(BenhNhan, PhieuKhamBenh.BenhNhan_id.__eq__(BenhNhan.id), isouter=True). \
+        join(Thuoc, ChiTietPhieuKhamBenh.Thuoc_id.__eq__(Thuoc.id), isouter=True). \
+        join(DonVi, Thuoc.DonVi_id.__eq__(DonVi.id), isouter=True). \
+        join(LoaiThuoc, Thuoc.LoaiThuoc_id.__eq__(LoaiThuoc.id), isouter=True). \
+        filter(BenhNhan.id.__eq__(patient_id) and PhieuKhamBenh.NgayKham.strftime("%d%m%Y") == med_date).all()
+
+
+def some_test():
+    return db.session.query()
+
+
+def get_medical_report_last_id():
+    return db.session.query(func.max(PhieuKhamBenh.id)).scalar()
+
+
+def get_payment_last_id():
+    return db.session.query(func.max(HoaDon.id)).scalar()
+
+
+def update_med_amount(med_name, amount):
+    db.session.query(Thuoc).filter(Thuoc.TenThuoc.__eq__(med_name)). \
+        update({'SoLuongConLai': Thuoc.SoLuongConLai - amount})
+    db.session.commit()
+
+
+def get_med_unit(med_name):
+    return db.session.query(DonVi.TenDonVi).join(Thuoc, Thuoc.DonVi_id.__eq__(DonVi.id)). \
+        filter(Thuoc.TenThuoc.__eq__(med_name)).scalar()
+
+
+def get_patient_name(id):
+    return db.session.query(BenhNhan.HoTen).filter(BenhNhan.id.__eq__(id)).scalar()
 
 
 def register(name, username, password, avatar, type):
@@ -100,7 +194,6 @@ def register(name, username, password, avatar, type):
     db.session.commit()
 
 
-
 def get_thuoc(month):
     return db.session.query(ChiTietPhieuKhamBenh.Thuoc_id,
                             Thuoc.TenThuoc,
@@ -111,39 +204,37 @@ def get_thuoc(month):
         .filter(ChiTietPhieuKhamBenh.PhieuKhamBenh_id == PhieuKhamBenh.id) \
         .filter(extract('month', PhieuKhamBenh.NgayKham) == month) \
         .filter(Thuoc.DonVi_id == DonVi.id) \
-        .group_by(ChiTietPhieuKhamBenh.Thuoc_id)\
+        .group_by(ChiTietPhieuKhamBenh.Thuoc_id) \
         .all()
-
-
-
-
 
 
 def get_revenue(month):
     return db.session.query(DanhSachKham.NgayKham, Thuoc.TenThuoc,
                             func.count(BenhNhan.id),
-                            func.count(PhieuKhamBenh.id)*tien_kham() +
-                            func.sum(ChiTietPhieuKhamBenh.SoLuong*Thuoc.DonGia))\
+                            func.count(PhieuKhamBenh.id) * tien_kham() +
+                            func.sum(ChiTietPhieuKhamBenh.SoLuong * Thuoc.DonGia)) \
         .join(ChiTietPhieuKhamBenh, ChiTietPhieuKhamBenh.Thuoc_id.__eq__(Thuoc.id)) \
-        .join(PhieuKhamBenh, ChiTietPhieuKhamBenh.PhieuKhamBenh_id.__eq__(PhieuKhamBenh.id))\
-        .join(BenhNhan, PhieuKhamBenh.BenhNhan_id.__eq__(BenhNhan.id))\
-        .join(DanhSachKham, BenhNhan.DanhSachKham_id.__eq__(DanhSachKham.id))\
-        .filter(extract('month', PhieuKhamBenh.NgayKham) == month) \
-        .group_by(DanhSachKham.NgayKham)\
+        .join(PhieuKhamBenh, ChiTietPhieuKhamBenh.PhieuKhamBenh_id.__eq__(PhieuKhamBenh.id)) \
+        .join(BenhNhan, PhieuKhamBenh.BenhNhan_id.__eq__(BenhNhan.id)) \
+        .join(DanhSachKham, BenhNhan.DanhSachKham_id.__eq__(DanhSachKham.id)) \
+        .filter(extract('month', DanhSachKham.NgayKham) == month) \
+        .group_by(DanhSachKham.NgayKham) \
         .all()
 
 
 def count_patient(month):
-    #ngay sobenhnhan doanhthu
-    return db.session.query(DanhSachKham.NgayKham, func.count(BenhNhan.id))\
-            .join(BenhNhan, BenhNhan.DanhSachKham_id.__eq__(DanhSachKham.id))\
-            .filter(extract('month', DanhSachKham.NgayKham) == month)\
-            .group_by(DanhSachKham.id)\
-            .all()
+    # ngay sobenhnhan doanhthu
+    return db.session.query(DanhSachKham.NgayKham, func.count(BenhNhan.id)) \
+        .join(BenhNhan, BenhNhan.DanhSachKham_id.__eq__(DanhSachKham.id)) \
+        .filter(extract('month', DanhSachKham.NgayKham) == month) \
+        .group_by(DanhSachKham.id) \
+        .all()
+
 
 if __name__ == '__main__':
     from QLPMT import app
+
     with app.app_context():
         print(get_revenue(12))
-        print(count_patient(12))
-
+        # print(count_patient(12))
+        # print(get_ngaykham_danhsachkham())
