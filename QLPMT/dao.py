@@ -52,7 +52,7 @@ def get_date(id):
 
 
 def count_bill(id):
-    return db.session.query(PhieuKhamBenh.BenhNhan_id == id).count()
+    return db.session.query(PhieuKhamBenh).filter(PhieuKhamBenh.BenhNhan_id == id).count()
 
 
 def tien_kham():
@@ -91,15 +91,25 @@ def delete_patient(id):
     db.session.commit()
 
 
-# Phieu kham benh
+# Phieu kham benhbe
 def add_medical_report(ngaykham, mabenhnhan, trieuchung, dudoanbenh):
     pk = PhieuKhamBenh(NgayKham=ngaykham, TrieuChung=trieuchung, DuDoanBenh=dudoanbenh, BacSi_id=1,
-                       BenhNhan_id=mabenhnhan, HoaDon_id=1)
+                       BenhNhan_id=mabenhnhan, HoaDon_id=mabenhnhan)
     db.session.add(pk)
     db.session.commit()
 
 
-def add_detial_medical_report(tenloaithuoc, tenthuoc, soluong, cachdung):
+def add_payment(payment_id):
+    found = db.session.query(db.session.query(HoaDon.id).filter_by(id=payment_id).exists()).scalar()
+    print(found)
+    if not found:
+        query = db.session.query(func.max(QuyDinhSoTienKham.id))
+        hd = HoaDon(id=payment_id, ThuNgan_id=1, SoTienKham_id=query)
+        db.session.add(hd)
+        db.session.commit()
+
+
+def add_detail_medical_report(tenloaithuoc, tenthuoc, soluong, cachdung):
     thuoc_id = get_med_id(tenthuoc, tenloaithuoc)
     phieukham_id = (get_medical_report_last_id())
     ctpkb = ChiTietPhieuKhamBenh(SoLuong=soluong, CachDung=cachdung, PhieuKhamBenh_id=phieukham_id,
@@ -137,20 +147,15 @@ def get_med_id(med_name=None, med_type=None):
 
 
 def get_medical_date_of_patient(patient_id):
-    return db.session.query(ChiTietPhieuKhamBenh, PhieuKhamBenh, BenhNhan). \
-        join(PhieuKhamBenh, ChiTietPhieuKhamBenh.PhieuKhamBenh_id.__eq__(PhieuKhamBenh.id)). \
+    return db.session.query(PhieuKhamBenh, BenhNhan). \
         join(BenhNhan, PhieuKhamBenh.BenhNhan_id.__eq__(BenhNhan.id)). \
         filter(BenhNhan.id.__eq__(patient_id)).all()
 
 
-def load_all_medical_report(patient_id, med_date):
-    return db.session.query(ChiTietPhieuKhamBenh, PhieuKhamBenh, BenhNhan, Thuoc, LoaiThuoc, DonVi). \
-        join(PhieuKhamBenh, ChiTietPhieuKhamBenh.PhieuKhamBenh_id.__eq__(PhieuKhamBenh.id), isouter=True). \
-        join(BenhNhan, PhieuKhamBenh.BenhNhan_id.__eq__(BenhNhan.id), isouter=True). \
-        join(Thuoc, ChiTietPhieuKhamBenh.Thuoc_id.__eq__(Thuoc.id), isouter=True). \
-        join(DonVi, Thuoc.DonVi_id.__eq__(DonVi.id), isouter=True). \
-        join(LoaiThuoc, Thuoc.LoaiThuoc_id.__eq__(LoaiThuoc.id), isouter=True). \
-        filter(BenhNhan.id.__eq__(patient_id) and PhieuKhamBenh.NgayKham.strftime("%d%m%Y") == med_date).all()
+def load_detail_medical_report(med_report_id):
+    return db.session.query(ChiTietPhieuKhamBenh, PhieuKhamBenh). \
+        join(PhieuKhamBenh, ChiTietPhieuKhamBenh.PhieuKhamBenh_id.__eq__(PhieuKhamBenh.id)). \
+        filter(PhieuKhamBenh.id == med_report_id).all()
 
 
 def some_test():
@@ -176,8 +181,23 @@ def get_med_unit(med_name):
         filter(Thuoc.TenThuoc.__eq__(med_name)).scalar()
 
 
-def get_patient_name(id):
-    return db.session.query(BenhNhan.HoTen).filter(BenhNhan.id.__eq__(id)).scalar()
+def get_all_patient_by_id(patient_id):
+    query1 = db.session.query(BenhNhan) \
+        .filter(BenhNhan.id.__eq__(patient_id)).limit(1).all()
+    print("query1: ", query1)
+    query2 = db.session.query(BenhNhan). \
+        filter(BenhNhan.HoTen == query1[0].HoTen). \
+        filter(BenhNhan.GioiTinh == query1[0].GioiTinh). \
+        filter(BenhNhan.DiaChi == query1[0].DiaChi). \
+        filter(BenhNhan.NamSinh == query1[0].NamSinh).all()
+    print("query2: ", query2)
+    return query2
+
+
+def get_patient_name(patient_id):
+    return db.session.query(BenhNhan.HoTen). \
+        filter(BenhNhan.id.__eq__(patient_id)). \
+        filter(BenhNhan.DanhSachKham_id.__eq__(db.session.query(func.max(DanhSachKham.id)))).scalar()
 
 
 def register(name, username, password, avatar, type):
@@ -210,7 +230,6 @@ def get_thuoc(month):
 
 def get_revenue(month):
     return db.session.query(DanhSachKham.NgayKham, Thuoc.TenThuoc,
-                            func.count(BenhNhan.id),
                             func.count(PhieuKhamBenh.id) * tien_kham() +
                             func.sum(ChiTietPhieuKhamBenh.SoLuong * Thuoc.DonGia)) \
         .join(ChiTietPhieuKhamBenh, ChiTietPhieuKhamBenh.Thuoc_id.__eq__(Thuoc.id)) \
@@ -219,15 +238,15 @@ def get_revenue(month):
         .join(DanhSachKham, BenhNhan.DanhSachKham_id.__eq__(DanhSachKham.id)) \
         .filter(extract('month', DanhSachKham.NgayKham) == month) \
         .group_by(DanhSachKham.NgayKham) \
+        .order_by(DanhSachKham.NgayKham)\
         .all()
 
 
 def count_patient(month):
-    # ngay sobenhnhan doanhthu
     return db.session.query(DanhSachKham.NgayKham, func.count(BenhNhan.id)) \
         .join(BenhNhan, BenhNhan.DanhSachKham_id.__eq__(DanhSachKham.id)) \
         .filter(extract('month', DanhSachKham.NgayKham) == month) \
-        .group_by(DanhSachKham.id) \
+        .group_by(DanhSachKham.NgayKham) \
         .all()
 
 
@@ -236,5 +255,6 @@ if __name__ == '__main__':
 
     with app.app_context():
         print(get_revenue(12))
-        # print(count_patient(12))
+        print(count_patient(12))
         # print(get_ngaykham_danhsachkham())
+        # print(count_patient(12))

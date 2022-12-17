@@ -24,7 +24,7 @@ input::-webkit-calendar-picker-indicator {
 }
 table{
     table-layout: auto;
-    white-space: nowrap;
+    width: 1px;
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -40,9 +40,25 @@ input[type=number]::-webkit-outer-spin-button {
 
 table.table-bordered{
     border:1px solid grey;
+    margin-bottom: 0px;
 }
 
-table.table-bordered > tr > td{
+#meds-table tbody > tr:last-child > td {
+  border-bottom: 1px solid white;
+}
+
+.wrap {
+
+}
+
+td, th {
+    text-align:center;
+    vertical-align: middle;
+}
+
+.table-bordered th,
+.table-bordered tr,
+.table-bordered td{
     border:1px solid gray;
 }
 

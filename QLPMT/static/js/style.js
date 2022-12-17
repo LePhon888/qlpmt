@@ -5,51 +5,55 @@
         p.parentNode.removeChild(p);
      }
 }
+
+
 function addMedToReport(element_id) {
-    let report_date = document.getElementById("medicalDate").value;
-    let patient_id = document.getElementById("patientID").value;
-    let symptoms = document.getElementById("patientSymptoms").value;
-    let diagnose = document.getElementById("doctorDiagnose").value;
-    let med_name = document.getElementById("medicineName").value;
-    let med_type = document.getElementById("medicineType").value;
-    let med_quantity = +document.getElementById("medicineQuantity").value;
-    let med_usage = document.getElementById("medicineUsage").value;
-    let not_included_med = document.getElementById("notIncludedMed").value;
+    let not_included_med = document.getElementById("notIncludedMed");
     let patient_info = document.getElementById("patient_info")
     let medical_info = document.getElementById("medical_info")
-    console.info(element_id)
-    if (element_id == medical_info && findEmptyInputInDiv(medical_info) && not_included_med =='0')
+    if (element_id == medical_info && findEmptyInputInDiv(medical_info) && not_included_med.value =='0')
             alert("Vui lòng điền đầy đủ các thông tin thuốc trong phiếu khám bệnh!!!");
     else if(element_id == patient_info && findEmptyInputInDiv(patient_info))
            alert("Vui lòng điền đầy đủ các thông tin bệnh nhân trong phiếu khám bệnh!!!");
-    else if (element_id == patient_info && findEmptyInputInDiv(patient_info) == false && not_included_med =='0')
+    else if (element_id == patient_info && findEmptyInputInDiv(patient_info) == false
+                && not_included_med.value =='0' && findEmptyInputInDiv(medical_info))
              alert("Vui lòng điền đầy đủ các thông tin thuốc trong phiếu khám bệnh hoặc chọn không kê khai thuốc!!!");
     else {
             fetch('/api/add-med-report', {
                 method: "post",
                 body: JSON.stringify({
-                "report_date": report_date,
-                "patient_id": patient_id,
-                "symptoms": symptoms,
-                "diagnose": diagnose,
-                "med_name": med_name,
-                "med_type": med_type,
-                "med_quantity": med_quantity,
-                "med_usage": med_usage
+                "report_date": document.getElementById("medicalDate").value,
+                "patient_id": document.getElementById("patientID").value,
+                "symptoms": document.getElementById("patientSymptoms").value,
+                "diagnose": document.getElementById("doctorDiagnose").value,
+                "med_name": document.getElementById("medicineName").value,
+                "med_type": document.getElementById("medicineType").value,
+                "med_quantity": +document.getElementById("medicineQuantity").value,
+                "med_usage": document.getElementById("medicineUsage").value,
+                "not_included_med": not_included_med.value
                 }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
             }).then(res => res.json()).then(data => {
+                            console.info(data.toString().length)
                             console.info(data)
-                            if (Object.keys(data).length > 0) {
+                            if (data.error === "no patient found")
+                                alert(`Không tìm thấy bệnh nhân trong danh sách khám ngày ${document.getElementById("medicalDate").value}`)
+                            else if (data.error === 'no medicine found')
+                                alert("Không tồn tại thuốc")
+                            else if (data.toString().length > 0) {
                                 alert("Thêm thành công!!!");
-                                resetValueMedReport(medical_info)
                                 refreshMedReportContent();
+                                document.getElementById("save_report").disabled=true;
+                                document.getElementById("clear_report").disabled=true;
+                                if (not_included_med.value != '1')
+                                  resetValueMedReport(medical_info)
+                                else
+                                    not_included_med.disabled = true;
                             }
-                            else {
-                                alert("Thêm thất bại (Không tồn tại thông tin bệnh nhân hoặc thuốc) !!!")
-                            }
+                            else
+                                alert("Thêm thất bại!!!");
                         }).catch(err => console.error(err))
         }
 }
@@ -66,7 +70,7 @@ function deleteMed(id) {
             }
         }).then(res => res.json()).then(data => {
             console.info(data);
-            let c = document.getElementById(`med_report${id}`);
+            let c = document.getElementById(`medical_report_medicine${id}`);
             c.style.display = "none";
             refreshMedReportContent();
         }).catch(err => console.info(err))
@@ -117,11 +121,12 @@ function resetValueMedReport(element_id) {
 function clearMedReportSession() {
     if (confirm("Bạn chắc chắn hủy phiếu khám bệnh không ") == true) {
         fetch('/api/clear-med-report').then(res => res.json()).then(data => {
-                if (data.status != 500) {
+                console.info(data)
+                if (data.status === 204) {
                     alert("Hủy thành công!!!")
+                    location.reload()
                     resetValueMedReport(patient_info)
                     resetValueMedReport(medical_info)
-                    location.reload()
                 }
                 else {
                     alert("Hủy thất bại!!!")
@@ -131,17 +136,14 @@ function clearMedReportSession() {
 }
 
 function refreshMedReportContent() {
-    $("#med_report_content").load(location.href + " #med_report_content");
-     $("#notIncludedMedDiv").load(location.href + " #notIncludedMedDiv");
+    $("#medical_report_content").load(location.href + " #medical_report_content");
 }
 
 function loadMedNameByType() {
-    let med_type = document.getElementById("medicineType").value;
-    let select =  document.getElementById("medicineNames")
      fetch('/api/load-med-name', {
             method: "post",
             body: JSON.stringify({
-            "med_type": med_type
+            "med_type": document.getElementById("medicineType").value
             }),
             headers: {
                 'Content-Type': 'application/json'
@@ -154,8 +156,10 @@ function loadMedNameByType() {
 
 function showPatientMedicalReport() {
     let patient_id = document.getElementById("patientID").value;
-    if (patient_id == "")
-        alert("Vui lòng nhập mã bệnh nhân để tiếp tục tra cứu");
+    if (patient_id == "") {
+            alert("Vui lòng nhập mã bệnh nhân để tiếp tục tra cứu");
+            $('#medical_report_list').hide()
+    }
     else {
     fetch('/api/load-patient-med-report', {
             method: "post",
@@ -166,28 +170,36 @@ function showPatientMedicalReport() {
                 'Content-Type': 'application/json'
             }
             }).then(res => res.json()).then(data => {
-                if (data.toString().length > 0) {
-                    if ($("#med_report_list").css('display') != 'none')
-                        $("#patient_medical_date").load(location.href + " #patient_medical_date");
-                    loadPatientMedicalReportToTable(data)
-                    $("#med_report_list").toggle();
-                }
-                else
-                    alert("Không tồn tại mã bệnh nhân!!!")
+                    if (data.length > 0) {
+                        let h = ''
+                        $('#medical_report_list').toggle()
+                        for(let i = 0; i< data.length; i++) {
+                            h += `
+                                    <tr>
+                                        <td>${(i+1)}</td>
+                                        <td id='${data[i].patient_id}'> ${data[i]["patient_name"]}</td>
+                                        <td id='date${(i+1)}'>${data[i]["med_date"]}</td>
+                                        <td>
+                                            <input type="button" value="Xem" class="btn btn-primary" onclick=showPatientMedicalReportByDate(${data[i].patient_id},date${(i+1)})>
+                                        </td>
+                                    </tr>`
+                        }
+                         let d = document.getElementById('patient_medical_date');
+                         d.innerHTML = h;
+                    }
+                    else
+                        alert("Bệnh nhân không có phiếu khám bệnh!!!")
                 }).catch(err => console.error(err))
     }
 }
 
-function showPatientMedicalReportByDate(date) {
-    let med_date = $(date).html();
-    console.info(med_date)
-    let patient_id = document.getElementById("patientID").value;
-    console.info(med_date)
+function showPatientMedicalReportByDate(patient_id,date) {
+    console.info(patient_id)
     fetch('/api/show-patient-med-report', {
             method: "post",
             body: JSON.stringify({
                 "patient_id": patient_id,
-                "med_date": med_date
+                "med_date": $(date).html()
             }),
             headers: {
                 'Content-Type': 'application/json'
@@ -196,21 +208,21 @@ function showPatientMedicalReportByDate(date) {
                     let d0 = "";
                     let d1 = "";
                     let d2 = "";
-                    for (let i = 0; i < data.length; i++){
-                        if (data[i].med_name == undefined) {
-                             d0 += `
-                                        <p class="fs-5">Phiếu khám: ${(i+1)}</p>
-                                        <p class="fs-5">Ngày khám: ${data[i].med_date}</p>
-                                        <p class="fs-5">Triệu chứng: ${data[i].symptoms}</p>
-                                        <p class="fs-5">Dự đoán bệnh: ${data[i].diagnose}</p>
-                             `
-                        }
-                        else {
-                            d1 += `     <p class="fs-5">Phiếu khám: ${(i+1)}</p>
-                                        <p class="fs-5">Ngày khám: ${data[i].med_date}</p>
-                                        <p class="fs-5">Triệu chứng: ${data[i].symptoms}</p>
-                                        <p class="fs-5">Dự đoán bệnh: ${data[i].diagnose}</p>
-                                        <table class="table table-bordered" style="max-width:400px">
+                    console.info(data)
+                    if (data.length > 0) {
+                        $('#patient_medical_list_container').show()
+                        for (let i = 0; i < data.length; i++){
+                            if (data[i].medicine != undefined) {
+                                if (data[i].medical_report != undefined)
+                                     d1 += `
+                                          </table>
+                                         <p>-----------------------------------------------------------------------------</p>
+                                         <p class="fs-5">Phiếu khám: ${data[i].medical_report.id}</p>
+                                         <p class="fs-5">Ngày khám: ${data[i].medical_report.med_date}</p>
+                                         <p class="fs-5">Triệu chứng: ${data[i].medical_report.symptoms}</p>
+                                         <p class="fs-5">Dự đoán bệnh: ${data[i].medical_report.diagnose}</p>
+
+                                            <table class="table table-bordered" style="max-width:500px">
                                                 <tr>
                                                     <th>Thuốc</th>
                                                     <th>Loại</th>
@@ -218,60 +230,57 @@ function showPatientMedicalReportByDate(date) {
                                                     <th>Số lượng</th>
                                                     <th>Cách dùng</th>
                                                 </tr>
-                                                <tr>
-                                                    <td>${data[i].med_name}</td>
-                                                    <td>${data[i].med_type}</td>
-                                                    <td>${data[i].med_unit}</td>
-                                                    <td>${data[i].med_quantity}</td>
-                                                    <td>${data[i].med_usage}</td>
+                                                     <td>${data[i].medicine.med_name}</td>
+                                                     <td>${data[i].medicine.med_type}</td>
+                                                     <td>${data[i].medicine.med_unit}</td>
+                                                     <td>${data[i].medicine.med_quantity}</td>
+                                                     <td>${data[i].medicine.med_usage}</td>
                                                 </tr>
-                                        </table>
-                            `
+                                     `
+                                else {
+                                      d1 += `
+                                              <tr>
+                                              <td>${data[i].medicine.med_name}</td>
+                                              <td>${data[i].medicine.med_type}</td>
+                                              <td>${data[i].medicine.med_unit}</td>
+                                              <td>${data[i].medicine.med_quantity}</td>
+                                              <td>${data[i].medicine.med_usage}</td>
+                                             </tr>
+                                      `
+                                }
+                            }
+                            else {
+                                 d0 += `
+                                     <p>-----------------------------------------------------------------------------</p>
+                                     <p class="fs-5">Phiếu khám: ${data[i].medical_report.id}</p>
+                                     <p class="fs-5">Ngày khám: ${data[i].medical_report.med_date}</p>
+                                     <p class="fs-5">Triệu chứng: ${data[i].medical_report.symptoms}</p>
+                                     <p class="fs-5">Dự đoán bệnh: ${data[i].medical_report.diagnose}</p>
+                                     <p class="fs-5">Không kê khai thuốc</p>
+                                 `
+                            }
                         }
-                    }
-                    let t0 = document.getElementById("patient_no_meds");
-                    t0.innerHTML = d0;
+                        let t0 = document.getElementById("patient_no_meds");
+                        t0.innerHTML = d0;
 
-                    let t1 = document.getElementById("patient_with_med");
-                    t1.innerHTML = d1;
+                        let t1 = document.getElementById("patient_with_med");
+                        t1.innerHTML = d1;
+                    }
                 }).catch(err => console.error(err))
 }
-
-function loadPatientMedicalReportToTable(data) {
-            for (let i = 0; i < data.length; i++) {
-            tr = $('<tr/>');
-            tr.append("<td>" + (i+1) + "</td>");
-            tr.append("<td>" + data[i].patient_name + "</td>");
-            tr.append("<td " + 'id="date' + (i+1) +'"' + ">" + data[i].med_date + "</td>");
-            tr.append("<td>" +  '<input type="button" value="Xem" class="btn btn-primary"'
-            + 'Onclick="' + 'showPatientMedicalReportByDate('+ 'date' + (i+1) + ')"'
-            + '/>' + "</td")
-            $('#patient_medical_date').append(tr);
-            }
-}
-
 function saveDataAfterRefresh() {
-    let report_date = document.getElementById("medicalDate").value;
-    let patient_id = document.getElementById("patientID").value;
-    let symptoms = document.getElementById("patientSymptoms").value;
-    let diagnose = document.getElementById("doctorDiagnose").value;
-    let med_name = document.getElementById("medicineName").value;
-    let med_type = document.getElementById("medicineType").value;
-    let med_quantity = +document.getElementById("medicineQuantity").value;
-    let med_usage = document.getElementById("medicineUsage").value;
-    let not_included_med = document.getElementById("notIncludedMed").value;
         fetch('/api/save-med-report', {
             method: "post",
             body: JSON.stringify({
-            "report_date": report_date,
-            "patient_id": patient_id,
-            "symptoms": symptoms,
-            "diagnose": diagnose,
-            "med_name": med_name,
-            "med_type": med_type,
-            "med_quantity": med_quantity,
-            "med_usage": med_usage,
-            "not_included_med": not_included_med
+            "report_date":  document.getElementById("medicalDate").value,
+            "patient_id": document.getElementById("patientID").value,
+            "symptoms": document.getElementById("patientSymptoms").value,
+            "diagnose": document.getElementById("doctorDiagnose").value,
+            "med_name": document.getElementById("medicineName").value,
+            "med_type": document.getElementById("medicineType").value,
+            "med_quantity": +document.getElementById("medicineQuantity").value,
+            "med_usage": document.getElementById("medicineUsage").value,
+            "not_included_med": document.getElementById("notIncludedMed").value
             }),
             headers: {
                 'Content-Type': 'application/json'
@@ -302,7 +311,7 @@ function searchKeyWordTable() {
   tr = table.getElementsByTagName("tr");
 
   for (i = 0; i < tr.length; i++) {
-    for (j = 0; j < 2; j++) {
+    for (j = 0; j < 3; j++) {
         td = tr[i].getElementsByTagName("td")[j]
         if (td) {
           txtValue = td.textContent || td.innerText;

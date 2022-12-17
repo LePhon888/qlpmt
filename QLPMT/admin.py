@@ -35,7 +35,7 @@ class StatsView(BaseView):
         revenue = dao.get_revenue(month)
 
         for r in revenue:
-            total += r[3]
+            total += r[2]
 
 
 
