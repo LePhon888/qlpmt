@@ -1,16 +1,24 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-<h1 class="text-center text-success">ĐĂNG KÝ KHÁM TRỰC TUYẾN</h1>
+<div class="container">
+    <h1 class="text-center text-success">ĐĂNG KÝ KHÁM TRỰC TUYẾN</h1>
 <form id="myFormId" method="post" enctype="multipart/form-data" action="/online-register">
     <div class="form-floating mb-3 mt-3">
         <input type="text" class="form-control" required id="name" placeholder="Nhập họ tên" name="name">
         <label for="name">Họ tên</label>
     </div>
 
-    <div class="form-floating mb-3 mt-3">
-        <input type="text" class="form-control" required id="sex" placeholder="Nhập giới tính" name="sex">
-        <label for="sex">Giới tính</label>
+   <div style="display: flex;">
+        <label style="margin-right: 20px">Giới tính: </label>
+        <div class="form-check" style="margin-right: 20px">
+            <input type="radio" class="form-check-input" id="male" name="sex" value="Nam" checked>
+            <label class="form-check-label" for="male">Nam</label>
+        </div>
+        <div class="form-check" style="margin-right: 20px">
+            <input type="radio" class="form-check-input" id="female" name="sex" value="Nữ">
+            <label class="form-check-label" for="female">Nữ</label>
+        </div>
     </div>
 
     <div class="form-floating mt-3 mb-3">
@@ -31,4 +39,6 @@
         <input type="submit" value="Đăng ký" class="btn btn-danger" onclick="showError()"/>
     </div>
 </form>
+
+</div>
 {% endblock %}

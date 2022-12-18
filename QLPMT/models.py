@@ -187,7 +187,7 @@ if __name__ == '__main__':
         #           user_role=UserRole.NURSE)
         # u2 = User(name='Nguyen Do Tai', username='nguyendotai', password=password,
         #           image='https://res.cloudinary.com/dxxwcby8l/image/upload/v1646729569/fi9v6vdljyfmiltegh7k.jpg',
-        #           user_role=UserRole.DOCTOR)
+        #            )
         # u3 = User(name='Nguyen Yen Phi', username='nguyenyenphi', password=password,
         #           image='https://res.cloudinary.com/dxxwcby8l/image/upload/v1646729569/fi9v6vdljyfmiltegh7k.jpg',
         #           user_role=UserRole.CASHIER)

@@ -43,6 +43,7 @@ function addMedToReport(element_id) {
                             else if (data.error === 'no medicine found')
                                 alert("Không tồn tại thuốc")
                             else if (data.toString().length > 0) {
+                                $("#medical_report_content").show()
                                 alert("Thêm thành công!!!");
                                 refreshMedReportContent();
                                 document.getElementById("save_report").disabled=true;
@@ -136,7 +137,7 @@ function clearMedReportSession() {
 }
 
 function refreshMedReportContent() {
-    $("#medical_report_content").load(location.href + " #medical_report_content");
+    $("#medical_report_content").load(location.href + " #medical_report_content>*","");
 }
 
 function loadMedNameByType() {
@@ -216,9 +217,9 @@ function showPatientMedicalReportByDate(patient_id,date) {
                                 if (data[i].medical_report != undefined)
                                      d1 += `
                                           </table>
-                                         <p>-----------------------------------------------------------------------------</p>
-                                         <p class="fs-5">Phiếu khám: ${data[i].medical_report.id}</p>
+                                         <h3>Phiếu khám bệnh</h3>
                                          <p class="fs-5">Ngày khám: ${data[i].medical_report.med_date}</p>
+                                         <p class="fs-5">Họ tên: ${data[i].medical_report.patient_name}</p>
                                          <p class="fs-5">Triệu chứng: ${data[i].medical_report.symptoms}</p>
                                          <p class="fs-5">Dự đoán bệnh: ${data[i].medical_report.diagnose}</p>
 
@@ -251,11 +252,11 @@ function showPatientMedicalReportByDate(patient_id,date) {
                             }
                             else {
                                  d0 += `
-                                     <p>-----------------------------------------------------------------------------</p>
-                                     <p class="fs-5">Phiếu khám: ${data[i].medical_report.id}</p>
-                                     <p class="fs-5">Ngày khám: ${data[i].medical_report.med_date}</p>
-                                     <p class="fs-5">Triệu chứng: ${data[i].medical_report.symptoms}</p>
-                                     <p class="fs-5">Dự đoán bệnh: ${data[i].medical_report.diagnose}</p>
+                                      <h3>Phiếu khám bệnh</h3>
+                                         <p class="fs-5">Ngày khám: ${data[i].medical_report.med_date}</p>
+                                         <p class="fs-5">Họ tên: ${data[i].medical_report.patient_name}</p>
+                                         <p class="fs-5">Triệu chứng: ${data[i].medical_report.symptoms}</p>
+                                         <p class="fs-5">Dự đoán bệnh: ${data[i].medical_report.diagnose}</p>
                                      <p class="fs-5">Không kê khai thuốc</p>
                                  `
                             }

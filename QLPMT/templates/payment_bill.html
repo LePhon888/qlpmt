@@ -1,45 +1,52 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-<form method="post" enctype="multipart/form-data" action="/payment_bill">
-    <br>
-     <p>Ngày khám: <span>{{new_today_date}}</span></p>
-    <div class="form-floating mb-3 mt-3">
-        <input type="text" class="form-control" required id="id" placeholder="Nhập mã bệnh nhân" name="id">
-        <label for="id">Nhập mã bệnh nhân</label>
-    </div>
+
+{% if current_user.user_role.name == 'NURSE'%}
+<div class="container">
+    <form method="post" enctype="multipart/form-data" action="/payment_bill">
+        <br>
+        <p>Ngày khám: <span>{{new_today_date}}</span></p>
+        <div class="form-floating mb-3 mt-3">
+            <input type="text" class="form-control" required id="id" placeholder="Nhập mã bệnh nhân" name="id">
+            <label for="id">Nhập mã bệnh nhân</label>
+        </div>
 
 
-    <div>
-        <input type="reset" value="Hủy" class="btn btn-danger"/>
-        <input type="submit" value="Xác nhận" class="btn btn-success"/>
+        <div>
+            <input type="reset" value="Hủy" class="btn btn-danger"/>
+            <input type="submit" value="Xác nhận" class="btn btn-success"/>
+        </div>
+    </form>
+    <p class="text-danger">{{err_msg}}</p>
+    {% if tongtienkham and not err_msg%}
+    <div class="container" style="margin:30px; width:60%; margin:auto">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th colspan="2"><h1 style="text-align:center">Hóa đơn thanh toán</h1></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Họ tên: {{ten}}</td>
+                <td>Ngày khám: {{ngaykham}}</td>
+            </tr>
+            <tr>
+                <td>Tiền khám: {{"{:,}".format(tongtienkham)}} VNĐ</td>
+                <td>Tiền thuốc: {{"{:,}".format(tienthuoc)}} VNĐ</td>
+            </tr>
+            <tr>
+                <td colspan="2">Tổng tiền: {{"{:,}".format(tongtien)}} VNĐ</td>
+            </tr>
+            </tr>
+            </tbody>
+        </table>
     </div>
-</form>
-<p class="text-danger">{{err_msg}}</p>
-{% if tongtienkham and not err_msg%}
-<div class="container" style="margin:30px; width:60%; margin:auto">
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th colspan="2"><h1 style="text-align:center">Hóa đơn thanh toán</h1></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>Họ tên: {{ten}}</td>
-            <td>Ngày khám: {{ngaykham}}</td>
-        </tr>
-        <tr>
-            <td>Tiền khám: {{"{:,}".format(tongtienkham)}} VNĐ</td>
-            <td>Tiền thuốc: {{"{:,}".format(tienthuoc)}} VNĐ</td>
-        </tr>
-        <tr>
-            <td colspan="2">Tổng tiền: {{"{:,}".format(tongtien)}} VNĐ</td>
-        </tr>
-        </tr>
-        </tbody>
-    </table>
+    {% endif %}
 </div>
-{% endif %}
+{% else %}
 
+<h2 class="text-danger">Vui lòng đăng nhập tài khoản thu ngân để lập danh sách khám</h2>
+{% endif %}
 {% endblock %}

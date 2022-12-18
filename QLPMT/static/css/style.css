@@ -1,5 +1,41 @@
 * {
-    font-family: Tahoma;
+    font-family: 'Poppins', sans-serif;
+}
+
+a {
+   text-decoration: none
+}
+
+.navbar-brand {
+    color: black;
+}
+
+li.nav-item > a {
+    line-height: 40px;
+    font-size: 16px;
+}
+
+
+.container-fluid {
+    margin-left: 200px;
+    font-weight: 500;
+    display: flex;
+}
+
+.banner {
+    position: relative;
+
+}
+
+.slider_text {
+    position: absolute;
+    z-index: 100;
+    top: 26%;
+    left: 26%;
+}
+
+.slider_text h3 {
+
 }
 
 .table {
@@ -74,5 +110,30 @@ height: 320px;
 }
 
 .hidden{
+    display: none;
+}
+
+
+.row {
+    width: 1600px
+}
+
+.wrap {
+    overflow-y: auto;
+    max-height: 500px;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 10px 10px 20px grey;
+    border-radius: 40px
+}
+
+#medical_report_content {
+    margin-top: 50px;
+    margin-left: -88px;
+    margin-bottom: 100px;
+    padding: 45px;
+    border-radius: 10px;
+    width: 48%;
+    border: 1px solid #ccc;
+    box-shadow: 10px 10px 20px grey;
     display: none;
 }

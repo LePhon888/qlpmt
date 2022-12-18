@@ -1,9 +1,18 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-{% if current_user.is_authenticated %}
-<h1 class="text-danger">Chào mừng đến với phòng mạch tư</h1>
-
-{% endif %}
+<div class="banner">
+    <img src="https://preview.colorlib.com/theme/docmed/img/banner/banner2.png"
+         alt="banner">
+    <div class="col-xl-12">
+        <div class="slider_text ">
+            <h1><span>Health care</span> <br>
+                For Hole Family </h1>
+            <p>In healthcare sector, service excellence is the facility of <br> the hospital as
+                healthcare service provider to consistently.</p>
+            <a href="/online-register" class="boxed-btn3">Register Now</a>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

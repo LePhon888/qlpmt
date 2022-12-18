@@ -1,263 +1,290 @@
 {% extends 'layout/base.html' %}
 {% block content %}
-<h1 xmlns="http://www.w3.org/1999/html"></h1>
-<h1 class="fs-2">PHIẾU KHÁM BỆNH</h1>
+{% if current_user.user_role.name == 'DOCTOR'%}
+<div class="container">
+    <h1 xmlns="http://www.w3.org/1999/html"></h1>
+<h1 class="fs-2" style="margin-left: 178px; margin-bottom: 20px; margin-top: 30px">PHIẾU KHÁM BỆNH</h1>
 <!--patient info and meds info-->
-<div class="row">
-<!--    patient info-->
-    <div class="col-4 border-right patient_info" id="patient_info">
-                        <p class="text-primary fs-5">Thông tin bệnh nhân </p>
-                        <div class="form-floating mb-3 mt-3">
-                            <input type="date" class="form-control" required id="medicalDate" name="medicalDate"
-                            {% if session['medical_report_save'] %}
-                                    value="{{ session['medical_report_save'].report_date}}"
-                                    {% endif %}>
-                            <label for="medicalDate" class="required-field">Ngày khám</label>
-                        </div>
-
-                        <div class="form-floating mb-3 mt-3">
-                            <input type="text" class="form-control" required id="patientID" placeholder="Nhập mã bệnh nhân"  name="patientID"
-                                    {% if session['medical_report_save'] %}
-                                        value="{{ session['medical_report_save'].patient_id}}"
-                                    {% endif %}>
-                            <label for="patientID" class="required-field">Mã bệnh nhân</label>
-                        </div>
-
-                        <div class="form-floating mt-3 mb-3">
-                            <input type="text" class="form-control" required id="patientSymptoms" placeholder="Nhập triệu chứng" name="patientSymptoms"
-                                   {% if session['medical_report_save'] %}
-                                        value="{{ session['medical_report_save'].symptoms}}"
-                                    {% endif %}>
-
-                            <label for="patientSymptoms" class="required-field">Triệu chứng</label>
-                        </div>
-
-                        <div class="form-floating mt-3 mb-3">
-                            <input type="text" class="form-control" required id="doctorDiagnose" placeholder="Nhập dự đoán bệnh" name="doctorDiagnose"
-                                {% if session['medical_report_save'] %}
-                                    value="{{ session['medical_report_save'].diagnose}}"
-                                    {% endif %}>
-                            <label for="doctorDiagnose" class="required-field">Dự đoán bệnh</label>
-                        </div>
-
-                        <div style="margin-bottom: 10px" id="notIncludedMedDiv">
-
-                            <input class="form-check-input from-control" type="checkbox" onclick="checkBoxValue()" onblur="saveDataAfterRefresh()"
-                                   id="notIncludedMed" name="notIncludedMed"
-                                   {% if session['medical_report_save'] %}
-                                        {% if session['medical_report_save'].not_included_med == '1' and session['medical_reports'] %}
-                                            {{"checked"}} {{'disabled'}} value = '1'
-                                        {% elif session['medical_report_save'].not_included_med == '1' %}
-                                            {{"checked"}} value = '1'
-                                        {% else %} value = '0'
-                                        {% endif %}
-                                   {% endif %}
-                            <label class="form-check-label"> Không kê khai thuốc</label>
-                        </div>
-
-                         <input type="button" id ="save_report"
-                                {%  if session['medical_reports']%}
-                                {{'disabled'}}
-                                {% endif %}
-                                onclick="addMedToReport(patient_info)" value="Lưu" class="btn btn-outline-primary"/>
-                         <input type="button" onclick="showPatientMedicalReport()" value="Xem" class="btn btn-outline-primary "/>
-                         <input type="button" id="clear_report"
-                                {%  if session['medical_reports']%}
-                                {{'disabled'}}
-                                {% endif %}
-                                onclick="resetValueMedReport(patient_info)" id="clear_patient_content" value="Hủy" class="btn btn-outline-danger "/>
-
-                    </div>
-<!--    medical info-->
-    <div class="col-4 medical_info" id="medical_info">
-                        <p class="text-primary fs-5">Thông tin thuốc </p>
-                         <div class="form-floating mb-3 mt-3">
-                             <input type="text" class="form-control" required id="medicineType" placeholder="Nhập tên loại thuốc"
-                                    name="medicineType" list="medicineTypes" onfocusout="loadMedNameByType()"
-                                    {% if session['medical_report_save'] %}
-                                         {% if session['medical_report_save'].not_included_med == '1' %}
-                                            {{"disabled"}} value=''
-                                         {% else %}
-                                            value="{{ session['medical_report_save'].med_type}}"
-                                         {% endif %}
-                                    {% endif %}
-                             >
-                             <label for="medicineType" class="required-field">Tên loại thuốc</label>
-                             <datalist id="medicineTypes">
-                                 {% for t in med_type %}
-                                 <option value="{{ t.TenLoaiThuoc }}">
-                                     {% endfor %}
-                             </datalist>
-                         </div>
-
-                         <div class="form-floating mb-3 mt-3">
-                             <input type="text" class="form-control" required id="medicineName" placeholder="Nhập tên thuốc"
-                                    name="medicineName" list="medicineNames"
-                                    {% if session['medical_report_save'] %}
-                                         {% if session['medical_report_save'].not_included_med == '1' %}
-                                            {{"disabled"}} value=''
-                                         {% else %}
-                                            value="{{ session['medical_report_save'].med_name}}"
-                                         {% endif %}
-                                    {% endif %}
-                             >
-                             <label for="medicineName" class="required-field">Tên thuốc</label>
-                             <datalist id="medicineNames">
-                                 {% if session['med_name'] %}
-                                 {% for m in session['med_name'] %}
-                                 <option value="{{ m['med_name'] }}">
-                                 {% endfor %}
-                                 {% endif %}
-                             </datalist>
-                         </div>
-
-                         <div class="form-floating mt-3 mb-3">
-                             <input type="number" class="form-control" required id="medicineQuantity"
-                                    placeholder="Nhập số lượng thuốc"
-                                    name="medicineQuantity"
-                                    {% if session['medical_report_save'] %}
-                                            {% if session['medical_report_save'].not_included_med == '1' %}
-                                                   {{"disabled"}}
-                                            {% else %}
-                                                value="{{ session['medical_report_save'].med_quantity}}"
-                                            {% endif %}
-                                    {% else %}
-                                        value="0"
-                                    {% endif %}
-                                     min="0" onblur="if(this.value<0)this.value=0"
-                             >
-                             <label for="medicineQuantity" class="required-field">Số lượng</label>
-                         </div>
-
-                         <div class="form-floating mt-3 mb-3">
-                             <input type="text" class="form-control" required id="medicineUsage" placeholder="Nhập cách dùng"
-                                    name="medicineUsage"
-                                    {% if session['medical_report_save'] %}
-                                         {% if session['medical_report_save'].not_included_med == '1' %}
-                                            {{"disabled"}} value=''
-                                         {% else %}
-                                            value="{{ session['medical_report_save'].med_usage}}"
-                                        {% endif %}
-                                    {% endif %}
-                             >
-                             <label for="medicineUsage" class="required-field">Cách dùng</label>
-                         </div>
-
-                         <button type="button" onclick="addMedToReport(medical_info)" class="btn btn-outline-primary m-1"/>Thêm
-                         <button type="button" onclick="resetValueMedReport(medical_info)" class="btn btn-outline-danger "/>Hủy
-    </div>
-<!--    find meds div-->
-    <div class="col-4">
-            <h4>TRA CỨU THUỐC</h4>
-            <input class="form-control me-2" name="keyword" type="text" id ="keyword" onkeyup="searchKeyWordTable()"
-                   placeholder="Nhập mã thuốc, tên thuốc, loại thuốc...">
-            <div class="wrap" style="overflow-y: auto; max-height: 350px; width:600px;border-bottom: 1px solid grey">
-                <table class="table table-bordered" id="meds-table">
-                    <tr>
-                        <th>Mã thuốc</th>
-                        <th>Tên thuốc</th>
-                        <th>Loại thuốc</th>
-                        <th>Đơn vị</th>
-                        <th>Đơn giá</th>
-                        <th>Tổng số lượng</th>
-                    </tr>
-                    <tbody>
-                    {% for m, t, u in med_info %}
-                    <tr>
-                        <td>{{ m.id }}</td>
-                        <td>{{ m.TenThuoc }}</td>
-                        <td>{{ t.TenLoaiThuoc }}</td>
-                        <td>{{ u.TenDonVi }}</td>
-                        <td>{{ m.DonGia }}</td>
-                        <td>{{ m.SoLuongConLai }}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+<div class="row" style="margin-left: -87px;">
+    <!--    patient info-->
+    <div class="col-3 border-right patient_info" id="patient_info">
+        <p class="text-primary fs-5">Thông tin bệnh nhân </p>
+        <div class="form-floating mb-3 mt-3">
+            <input type="date" class="form-control" disabled required id="medicalDate" name="medicalDate"
+                   {% if session['medical_report_save'] %}
+            value="{{ session['medical_report_save'].report_date}}"
+            {% endif %}>
+            <label for="medicalDate" class="required-field">Ngày khám</label>
         </div>
+
+        <div class="form-floating mb-3 mt-3">
+            <input type="text" class="form-control" required id="patientID" placeholder="Nhập mã bệnh nhân"
+                   name="patientID"
+                   {% if session['medical_report_save'] %}
+            value="{{ session['medical_report_save'].patient_id}}"
+            {% endif %}>
+            <label for="patientID" class="required-field">Mã bệnh nhân</label>
+        </div>
+
+        <div class="form-floating mt-3 mb-3">
+            <input type="text" class="form-control" required id="patientSymptoms" placeholder="Nhập triệu chứng"
+                   name="patientSymptoms"
+                   {% if session['medical_report_save'] %}
+            value="{{ session['medical_report_save'].symptoms}}"
+            {% endif %}>
+
+            <label for="patientSymptoms" class="required-field">Triệu chứng</label>
+        </div>
+
+        <div class="form-floating mt-3 mb-3">
+            <input type="text" class="form-control" required id="doctorDiagnose" placeholder="Nhập dự đoán bệnh"
+                   name="doctorDiagnose"
+                   {% if session['medical_report_save'] %}
+            value="{{ session['medical_report_save'].diagnose}}"
+            {% endif %}>
+            <label for="doctorDiagnose" class="required-field">Dự đoán bệnh</label>
+        </div >
+
+        <div style="margin-bottom: 10px" id="notIncludedMedDiv">
+
+            <input class="form-check-input from-control" type="checkbox" onclick="checkBoxValue()"
+                   onblur="saveDataAfterRefresh()"
+                   id="notIncludedMed" name="notIncludedMed"
+                   {% if session['medical_report_save'] %}
+            {% if session['medical_report_save'].not_included_med == '1' and session['medical_reports'] %}
+            {{"checked"}} {{'disabled'}} value = '1'
+            {% elif session['medical_report_save'].not_included_med == '1' %}
+            {{"checked"}} value = '1'
+            {% else %} value = '0'
+            {% endif %}
+            {% endif %}
+            <label class="form-check-label"> Không kê khai thuốc</label>
+        </div>
+
+
+        <input type="button" id="clear_report"
+               {% if session['medical_reports']%}
+        {{'disabled'}}
+        {% endif %}
+        onclick="resetValueMedReport(patient_info)" id="clear_patient_content" value="Hủy" class="btn btn-outline-danger
+        "/>
+        <input type="button" onclick="showPatientMedicalReport()"
+               value="Xem lịch sử" class="btn btn-outline-primary "
+               data-toggle="tooltip" title="Nhập mã bệnh nhân để xem danh sách phiếu khám bệnh"/>
+        <input type="button" id="save_report"
+               {% if session['medical_reports']%}
+        {{'disabled'}}
+        {% endif %}
+        onclick="addMedToReport(patient_info)" value="Lưu phiếu" class="btn btn-outline-primary"/>
+
+
+    </div>
+    <!--    medical info-->
+    <div class="col-3 medical_info" id="medical_info">
+        <p class="text-primary fs-5">Thông tin thuốc </p>
+        <div class="form-floating mb-3 mt-3">
+            <input type="text" class="form-control" required id="medicineType" placeholder="Nhập tên loại thuốc"
+                   name="medicineType" list="medicineTypes" onfocusout="loadMedNameByType()"
+                   {% if session['medical_report_save'] %}
+            {% if session['medical_report_save'].not_included_med == '1' %}
+            {{"disabled"}} value=''
+            {% else %}
+            value="{{ session['medical_report_save'].med_type}}"
+            {% endif %}
+            {% endif %}
+            >
+            <label for="medicineType" class="required-field">Tên loại thuốc</label>
+            <datalist id="medicineTypes">
+                {% for t in med_type %}
+                <option value="{{ t.TenLoaiThuoc }}">
+                    {% endfor %}
+            </datalist>
+        </div>
+
+        <div class="form-floating mb-3 mt-3">
+            <input type="text" class="form-control" required id="medicineName" placeholder="Nhập tên thuốc"
+                   name="medicineName" list="medicineNames"
+                   {% if session['medical_report_save'] %}
+            {% if session['medical_report_save'].not_included_med == '1' %}
+            {{"disabled"}} value=''
+            {% else %}
+            value="{{ session['medical_report_save'].med_name}}"
+            {% endif %}
+            {% endif %}
+            >
+            <label for="medicineName" class="required-field">Tên thuốc</label>
+            <datalist id="medicineNames">
+                {% if session['med_name'] %}
+                {% for m in session['med_name'] %}
+                <option value="{{ m['med_name'] }}">
+                    {% endfor %}
+                    {% endif %}
+            </datalist>
+        </div>
+
+        <div class="form-floating mt-3 mb-3">
+            <input type="number" class="form-control" required id="medicineQuantity"
+                   placeholder="Nhập số lượng thuốc"
+                   name="medicineQuantity"
+                   {% if session['medical_report_save'] %}
+            {% if session['medical_report_save'].not_included_med == '1' %}
+            {{"disabled"}}
+            {% else %}
+            value="{{ session['medical_report_save'].med_quantity}}"
+            {% endif %}
+            {% else %}
+            value="0"
+            {% endif %}
+            min="0" onblur="if(this.value<0)this.value=0"
+            >
+            <label for="medicineQuantity" class="required-field">Số lượng</label>
+        </div>
+
+        <div class="form-floating mt-3 mb-3">
+            <input type="text" class="form-control" required id="medicineUsage" placeholder="Nhập cách dùng"
+                   name="medicineUsage"
+                   {% if session['medical_report_save'] %}
+            {% if session['medical_report_save'].not_included_med == '1' %}
+            {{"disabled"}} value=''
+            {% else %}
+            value="{{ session['medical_report_save'].med_usage}}"
+            {% endif %}
+            {% endif %}
+            >
+            <label for="medicineUsage" class="required-field">Cách dùng</label>
+        </div>
+        <button type="button" onclick="resetValueMedReport(medical_info)" class="btn btn-outline-danger "/>
+        Hủy
+        <button type="button" onclick="addMedToReport(medical_info)" class="btn btn-outline-primary m-1"/>
+        Thêm thuốc
+
+    </div>
+    <!--    find meds div-->
+    <div class="col-6" style="border-left: 1px solid #ccc;
+    border-radius: 20px;">
+        <h2>TRA CỨU THUỐC</h2>
+        <input class="form-control me-2" name="keyword" type="text"
+               id="keyword" onkeyup="searchKeyWordTable()" style="margin-bottom: 10px; width: 50%"
+               placeholder="Nhập mã thuốc, tên thuốc, loại thuốc...">
+        <div class="wrap">
+            <table class="table " id="meds-table">
+                <tr style="position: sticky; top: 0; z-index: 1; background-color: #ecf0f1">
+                    <th>Mã thuốc</th>
+                    <th>Tên thuốc</th>
+                    <th>Loại thuốc</th>
+                    <th>Đơn vị</th>
+                    <th>Đơn giá</th>
+                    <th>Tổng số lượng</th>
+                </tr>
+                <tbody>
+                {% for m, t, u in med_info %}
+                <tr>
+                    <td>{{ m.id }}</td>
+                    <td>{{ m.TenThuoc }}</td>
+                    <td>{{ t.TenLoaiThuoc }}</td>
+                    <td>{{ u.TenDonVi }}</td>
+                    <td>{{ m.DonGia }}</td>
+                    <td>{{ m.SoLuongConLai }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 <!--medical report content-->
-<div class="row mt-3" style="margin-top: 50px">
+<div class="row mt-3">
     <!-- current medical report-->
 
-    <div class="col mt-3" id ="medical_report_content">
-    {% if session['medical_reports']%}
 
-            <h4>BIỂU MẪU PHIẾU KHÁM BỆNH</h4>
-            <div class="container">
-
-                <p class="fs-5">Ngày khám: {{ session['medical_reports'].report_date }}</p>
-                <p class="fs-5">Họ tên: {{ session['medical_reports'].patient_name }}</p>
-                <p class="fs-5">Triệu chứng: {{ session['medical_reports'].symptoms }}</p>
-                <p class="fs-5">Dự đoán bệnh: {{ session['medical_reports'].diagnose }}</p>
-
-                {% if session['medical_report_medicine'] %}
-                <table class="table table-bordered" id="report-meds-table" style="max-width:600px">
-                    <tr>
-                        <th>STT</th>
-                        <th>Thuốc</th>
-                        <th>Loại</th>
-                        <th>Đơn vị</th>
-                        <th>Số lượng</th>
-                        <th>Cách dùng</th>
-                        <th></th>
-                    </tr>
-                    {% for m in session['medical_report_medicine'].values() %}
-                    <tr id="medical_report_medicine{{ m.id }}">
-                        <td>{{ m.id }}</td>
-                        <td>{{ m.med_name }}</td>
-                        <td>{{ m.med_type }}</td>
-                        <td> {{ m.med_unit }}</td>
-                        <td>{{ m.med_quantity }}</td>
-                        <td>{{ m.med_usage }}</td>
-                        <td>
-                            <input type="button" onclick="deleteMed({{m.id}})" value="Xóa" class="btn btn-danger"/>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
-                {% endif %}
-                <div class="d-flex mt-2">
-                    <form method="post" enctype="multipart/form-data" action="/medical-report">
-                        <input type="submit" value="Lưu" class="btn btn-outline-primary">
-                    </form>
-                    <input type="button" onclick="clearMedReportSession()" value="Hủy" class="btn btn-outline-danger" style="margin-left: 5px">
+    <div id="medical_report_content">
+        {% if session['medical_reports']%}
+        <h2 style="margin-bottom: 26px">BIỂU MẪU PHIẾU KHÁM BỆNH</h2>
+        <div>
+            <div style="display: flex">
+                <div style="margin-right: 150px">
+                    <p class="fs-5">Họ tên: {{ session['medical_reports'].patient_name }}</p>
+                    <p class="fs-5">Triệu chứng: {{ session['medical_reports'].symptoms }}</p>
                 </div>
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            {% for message in messages %}
-                    <div class="alert alert-danger mt-3 fs-5" style="text-align:center;">{{ message }}</div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
+                <div>
+                    <p class="fs-5">Ngày khám: {{ session['medical_reports'].report_date }}</p>
+                    <p class="fs-5">Dự đoán bệnh: {{ session['medical_reports'].diagnose }}</p>
+                </div>
             </div>
-    {% endif %}
+
+            {% if session['medical_report_medicine'] %}
+            <table class="table" id="report-meds-table"
+                   style="max-width:600px; margin-top: 40px">
+                <tr>
+                    <th>STT</th>
+                    <th>Thuốc</th>
+                    <th>Loại</th>
+                    <th>Đơn vị</th>
+                    <th>Số lượng</th>
+                    <th>Cách dùng</th>
+                    <th></th>
+                </tr>
+                {% for m in session['medical_report_medicine'].values() %}
+                <tr id="medical_report_medicine{{ m.id }}">
+                    <td>{{ m.id }}</td>
+                    <td>{{ m.med_name }}</td>
+                    <td>{{ m.med_type }}</td>
+                    <td> {{ m.med_unit }}</td>
+                    <td>{{ m.med_quantity }}</td>
+                    <td>{{ m.med_usage }}</td>
+                    <td>
+                        <input type="button" onclick="deleteMed({{m.id}})" value="X" class="btn btn-danger"/>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+            <div class="d-flex mt-2" style="margin-left: 70%">
+                <input type="button" onclick="clearMedReportSession()" value="Hủy" class="btn btn-outline-danger"
+                       style="margin-left: 5px">
+                <form method="post" enctype="multipart/form-data" action="/medical-report">
+                    <input type="submit" value="Lưu" class="btn btn-outline-primary">
+                </form>
+
+            </div>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-danger mt-3 fs-5" style="text-align:center;">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+        {% endif %}
     </div>
 
     <!--     all medical report of patient-->
-    <div class="col-6 mt-3 hidden" id="medical_report_list">
-        <h4 class="text-center"> DANH SÁCH PHIẾU KHÁM </h4>
-        <div style="overflow-y: auto; max-height: 300px">
-                <table class="table table-bordered mx-auto w-auto" style="width:1px;">
-                    <tr>
-                        <th>STT</th>
-                        <th>Tên</th>
-                        <th>Ngày khám</th>
-                        <th></th>
-                    </tr>
-                    <tbody id ="patient_medical_date"></tbody>
+    <div class="col-6 mt-3 hidden" id="medical_report_list" style="margin-left: 50px; margin-top: 1px">
+        <h2 style="margin-bottom: 30px"> DANH SÁCH PHIẾU KHÁM </h2>
+        <div>
+            <table class="table" style="width: 70%">
+                <tr>
+                    <th>STT</th>
+                    <th>Tên</th>
+                    <th>Ngày khám</th>
+                    <th></th>
+                </tr>
+                <tbody id="patient_medical_date"></tbody>
 
-                </table>
+            </table>
         </div>
-        <div id="patient_medical_list_container" class="container mt-3 border border-secondary hidden" style="overflow-y: auto;overflow-x: hidden; max-height: 300px">
-            <div id ="patient_no_meds"></div>
+        <div id="patient_medical_list_container" class="container mt-3 hidden">
+            <div id="patient_no_meds"></div>
             <div id="patient_with_med"></div>
         </div>
     </div>
 </div>
 
+</div>
+{% else %}
 
+    <h2 class="text-danger">Vui lòng đăng nhập tài khoản bác sĩ để lập danh sách khám</h2>
+    {% endif %}
 <script>
     window.addEventListener('load', () => {
         let date = new Date();
@@ -276,5 +303,12 @@
         if($('#notIncludedMed').is(':checked') == false)
             $("#medical_info :input").attr("disabled", false);
     })
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+    });
+
+
+
+
 </script>
 {% endblock %}

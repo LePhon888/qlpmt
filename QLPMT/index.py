@@ -6,7 +6,6 @@ from flask_login import login_user, logout_user, current_user, login_required
 from QLPMT.decorators import annonymous_user, requires_access_level
 import cloudinary.uploader
 
-@requires_access_level(current_user)
 @app.route("/")
 def index():
     return render_template('index.html')
@@ -70,8 +69,6 @@ def register():
 
     return render_template('register.html', err_msg=err_msg)
 
-@login_required
-@requires_access_level(current_user)
 @app.route('/medical_list/', defaults={'id': None}, methods=['get', 'post'])
 @app.route('/medical_list/<int:id>', methods=['get', 'post'])
 @login_required
@@ -238,7 +235,6 @@ def show_patient_medical_report_by_date():
     data = request.json
     patient_id = data['patient_id']
     med_date = data['med_date']
-    patient_name = dao.get_patient_name(patient_id)
     temp = dao.get_medical_date_of_patient(patient_id=patient_id)
     result = []
     for item in temp:
@@ -251,6 +247,7 @@ def show_patient_medical_report_by_date():
                             "medical_report": {
                                 "id": d.ChiTietPhieuKhamBenh.phieukhambenh.id,
                                 "med_date": d.ChiTietPhieuKhamBenh.phieukhambenh.NgayKham.strftime("%d/%m/%Y"),
+                                "patient_name": d.ChiTietPhieuKhamBenh.phieukhambenh.benhnhan.HoTen,
                                 "symptoms": d.ChiTietPhieuKhamBenh.phieukhambenh.TrieuChung,
                                 "diagnose": d.ChiTietPhieuKhamBenh.phieukhambenh.DuDoanBenh,
                                 "med_included": 1
@@ -277,6 +274,7 @@ def show_patient_medical_report_by_date():
                 result.append({
                     "medical_report": {
                         "id": item.PhieuKhamBenh.id,
+                        "patient_name": item.PhieuKhamBenh.benhnhan.HoTen,
                         "med_date": item.PhieuKhamBenh.NgayKham.strftime("%d/%m/%Y"),
                         "symptoms": item.PhieuKhamBenh.TrieuChung,
                         "diagnose": item.PhieuKhamBenh.DuDoanBenh,
@@ -284,7 +282,6 @@ def show_patient_medical_report_by_date():
                 })
     res = make_response(jsonify(result), 200)
     return res
-
 
 @app.route('/api/clear-med-report')
 def clear_medical_report_session():
@@ -366,6 +363,7 @@ def add_med_to_report():
                 }
         session[key] = medical_reports
         session[key2] = medical_report_medicine
+        print(medical_report_medicine)
         print(medical_reports)
     return jsonify({"data": 204})
 
@@ -398,7 +396,6 @@ def delete_med_in_report():
 
 
 @app.route('/payment_bill', methods=['get', 'post'])
-@requires_access_level(current_user)
 @login_required
 def payment_bill():
     err_msg = ''

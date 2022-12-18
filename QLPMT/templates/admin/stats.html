@@ -1,7 +1,8 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-<h1 class="text-center text-danger">THỐNG KÊ BÁO CÁO</h1>
+<div class="container" style="margin-left: -100px">
+    <h1 class="text-center text-danger">THỐNG KÊ BÁO CÁO</h1>
 <form action="">
             <label for="month" class="form-label">Nhập vào tháng: </label>
             <input style="width: 50%" type="text" class="form-control" id="month" placeholder="Nhập tháng" name="month">
@@ -70,6 +71,7 @@
 </div>
 
 
+</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/my-chart.js') }}"></script>
 <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>

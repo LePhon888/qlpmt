@@ -1,7 +1,8 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-<h1 class="text-center text-success">ĐĂNG NHẬP NGƯỜI DÙNG</h1>
+<div class="container">
+    <h1 class="text-center text-success">ĐĂNG NHẬP NGƯỜI DÙNG</h1>
 
 {% if err_msg %}
 <div class="alert alert-danger">
@@ -23,4 +24,5 @@
         <input type="submit" value="Đăng nhập" class="btn btn-danger" />
     </div>
 </form>
+</div>
 {% endblock %}
