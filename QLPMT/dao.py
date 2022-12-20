@@ -1,7 +1,7 @@
 from flask import session
 from flask_sqlalchemy.session import Session
 
-from sqlalchemy import func, extract, union
+from sqlalchemy import func, extract, union, or_
 
 from QLPMT.models import User, BenhNhan, DanhSachKham, UserRole, PhieuKhamBenh, QuyDinhSoTienKham, ChiTietPhieuKhamBenh, \
     Thuoc, QuyDinhSoBenhNhaKhamTrongNgay, HoaDon, DonVi, LoaiThuoc
@@ -220,7 +220,7 @@ def get_thuoc(month):
                             DonVi.TenDonVi,
                             Thuoc.SoLuongConLai,
                             func.sum(ChiTietPhieuKhamBenh.SoLuong)) \
-        .join(ChiTietPhieuKhamBenh, ChiTietPhieuKhamBenh.Thuoc_id.__eq__(Thuoc.id)) \
+        .join(ChiTietPhieuKhamBenh, ChiTietPhieuKhamBenh.Thuoc_id.__eq__(Thuoc.id), isouter=True) \
         .filter(ChiTietPhieuKhamBenh.PhieuKhamBenh_id == PhieuKhamBenh.id) \
         .filter(extract('month', PhieuKhamBenh.NgayKham) == month) \
         .filter(Thuoc.DonVi_id == DonVi.id) \
@@ -241,7 +241,6 @@ def get_revenue(month):
         .order_by(DanhSachKham.NgayKham)\
         .all()
 
-
 def count_patient(month):
     return db.session.query(DanhSachKham.NgayKham, func.count(BenhNhan.id)) \
         .join(BenhNhan, BenhNhan.DanhSachKham_id.__eq__(DanhSachKham.id)) \
@@ -250,11 +249,19 @@ def count_patient(month):
         .all()
 
 
+def get_phieu(day):
+    return db.session.query(PhieuKhamBenh.id).filter(PhieuKhamBenh.NgayKham == day).all()
+
+
 if __name__ == '__main__':
     from QLPMT import app
 
     with app.app_context():
-        print(get_revenue(12))
+        for c in count_patient(12):
+            p = get_phieu(c[0])
+
+            print(get_revenue(c[0]))
+
         print(count_patient(12))
-        # print(get_ngaykham_danhsachkham())
-        # print(count_patient(12))
+
+

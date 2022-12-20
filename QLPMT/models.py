@@ -223,8 +223,8 @@ if __name__ == '__main__':
         # db.session.add_all([hd])
         # db.session.commit()
 
-        # b1 = BenhNhan(HoTen='Nguyen Tat Thanh', GioiTinh='Nam',
-        #               NamSinh='1989', DiaChi='Quận 8', DanhSachKham_id=6)
+        # b1 = BenhNhan(HoTen='Nguyen Tat Phu', GioiTinh='Nam',
+        #               NamSinh='1989', DiaChi='Quận 8', DanhSachKham_id=13)
         # b2 = BenhNhan(HoTen='Nguyen Tram Anh', GioiTinh='Nữ',
         #               NamSinh='2000', DiaChi='Tân Phú', DanhSachKham_id=4)
         # b3 = BenhNhan(HoTen='Le Anh Cuong', GioiTinh='Nam',
@@ -245,7 +245,7 @@ if __name__ == '__main__':
         # db.session.commit()
         #
         p1 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
-                           BacSi_id=1, BenhNhan_id=34, HoaDon_id=34)
+                           BacSi_id=1, BenhNhan_id=46, HoaDon_id=46)
         # p2 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',
         #                    BacSi_id=1, BenhNhan_id=21, HoaDon_id=21)
         # p3 = PhieuKhamBenh(TrieuChung='ho', DuDoanBenh='ho',

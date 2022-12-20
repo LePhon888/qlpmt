@@ -32,6 +32,7 @@ class StatsView(BaseView):
         month = request.args.get('month')
         thuoc = dao.get_thuoc(month)
         total = 0
+
         revenue = dao.get_revenue(month)
 
         for r in revenue:

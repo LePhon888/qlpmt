@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if current_user.user_role.name == 'NURSE'%}
+{% if current_user.user_role.name == 'CASHIER'%}
 <div class="container">
     <form method="post" enctype="multipart/form-data" action="/payment_bill">
         <br>
