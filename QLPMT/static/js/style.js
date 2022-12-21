@@ -5,6 +5,11 @@
         p.parentNode.removeChild(p);
      }
 }
+function spinner(status="block") {
+    let s = document.getElementsByClassName("my-spinner")
+    for (let i = 0; i < s.length; i++)
+        s[i].style.display = status
+}
 
 
 function addMedToReport(element_id) {
@@ -19,6 +24,7 @@ function addMedToReport(element_id) {
                 && not_included_med.value =='0' && findEmptyInputInDiv(medical_info))
              alert("Vui lòng điền đầy đủ các thông tin thuốc trong phiếu khám bệnh hoặc chọn không kê khai thuốc!!!");
     else {
+            spinner()
             fetch('/api/add-med-report', {
                 method: "post",
                 body: JSON.stringify({
@@ -38,10 +44,13 @@ function addMedToReport(element_id) {
             }).then(res => res.json()).then(data => {
                             console.info(data.toString().length)
                             console.info(data)
+                            spinner("none")
                             if (data.error === "no patient found")
                                 alert(`Không tìm thấy bệnh nhân trong danh sách khám ngày ${document.getElementById("medicalDate").value}`)
                             else if (data.error === 'no medicine found')
                                 alert("Không tồn tại thuốc")
+                            else if (data.error === 'error quantity')
+                                alert("So luong thuoc phai nho hon")
                             else if (data.toString().length > 0) {
                                 $("#medical_report_content").show()
                                 alert("Thêm thành công!!!");
@@ -61,6 +70,7 @@ function addMedToReport(element_id) {
 
 function deleteMed(id) {
     if (confirm("Bạn chắc chắn xóa không?") == true) {
+        spinner()
         fetch('/api/delete-med-report', {
             method: "delete",
             body: JSON.stringify({
@@ -70,6 +80,7 @@ function deleteMed(id) {
                 'Content-Type': 'application/json'
             }
         }).then(res => res.json()).then(data => {
+            spinner("none")
             console.info(data);
             let c = document.getElementById(`medical_report_medicine${id}`);
             c.style.display = "none";
@@ -121,7 +132,9 @@ function resetValueMedReport(element_id) {
 
 function clearMedReportSession() {
     if (confirm("Bạn chắc chắn hủy phiếu khám bệnh không ") == true) {
+        spinner()
         fetch('/api/clear-med-report').then(res => res.json()).then(data => {
+            spinner("none")
                 console.info(data)
                 if (data.status === 204) {
                     alert("Hủy thành công!!!")
@@ -138,9 +151,11 @@ function clearMedReportSession() {
 
 function refreshMedReportContent() {
     $("#medical_report_content").load(location.href + " #medical_report_content>*","");
+
 }
 
 function loadMedNameByType() {
+    spinner()
      fetch('/api/load-med-name', {
             method: "post",
             body: JSON.stringify({
@@ -150,6 +165,7 @@ function loadMedNameByType() {
                 'Content-Type': 'application/json'
             }
         }).then(res => res.json()).then(data => {
+                        spinner("none")
                         console.info(data)
                         $("#medicineNames").load(location.href + " #medicineNames")
                     }).catch(err => console.error(err))
@@ -162,6 +178,7 @@ function showPatientMedicalReport() {
             $('#medical_report_list').hide()
     }
     else {
+    spinner()
     fetch('/api/load-patient-med-report', {
             method: "post",
             body: JSON.stringify({
@@ -171,6 +188,7 @@ function showPatientMedicalReport() {
                 'Content-Type': 'application/json'
             }
             }).then(res => res.json()).then(data => {
+                    spinner("none")
                     if (data.length > 0) {
                         let h = ''
                         $('#medical_report_list').toggle()
@@ -196,6 +214,7 @@ function showPatientMedicalReport() {
 
 function showPatientMedicalReportByDate(patient_id,date) {
     console.info(patient_id)
+    spinner()
     fetch('/api/show-patient-med-report', {
             method: "post",
             body: JSON.stringify({
@@ -206,6 +225,7 @@ function showPatientMedicalReportByDate(patient_id,date) {
                 'Content-Type': 'application/json'
             }
             }).then(res => res.json()).then(data => {
+                    spinner("none")
                     let d0 = "";
                     let d1 = "";
                     let d2 = "";
@@ -217,6 +237,7 @@ function showPatientMedicalReportByDate(patient_id,date) {
                                 if (data[i].medical_report != undefined)
                                      d1 += `
                                           </table>
+                                          <br>
                                          <h3>Phiếu khám bệnh</h3>
                                          <p class="fs-5">Ngày khám: ${data[i].medical_report.med_date}</p>
                                          <p class="fs-5">Họ tên: ${data[i].medical_report.patient_name}</p>
@@ -310,13 +331,14 @@ function searchKeyWordTable() {
   filter = input.value.toUpperCase();
   table = document.getElementById("meds-table");
   tr = table.getElementsByTagName("tr");
-
+  spinner()
   for (i = 0; i < tr.length; i++) {
     for (j = 0; j < 3; j++) {
         td = tr[i].getElementsByTagName("td")[j]
         if (td) {
           txtValue = td.textContent || td.innerText;
           if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            spinner("none")
             tr[i].style.display = "";
             break;
           } else {

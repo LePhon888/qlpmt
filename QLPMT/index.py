@@ -106,7 +106,7 @@ def medical_list(id):
                                     DanhSachKham_id=DanhSachKham_id)
                 err_msg = 'Đăng ký khám thành công'
             else:
-                err_msg = 'Vượt quá bệnh nhân khám trong ngày'
+                err_msg = 'Đăng ký khám thất bại vì vượt quá bệnh nhân khám trong ngày'
             b = dao.load_BenhNhan(DanhSachKham_id=DanhSachKham_id)
         return render_template('medical_list.html', err_msg=err_msg,
                                benhnhan=b,
@@ -145,10 +145,10 @@ def medical_report():
                                               soluong=int(data.get('med_quantity')),
                                               cachdung=data.get('med_usage'))
                 dao.update_med_amount(med_name=data.get('med_name'), amount=data.get('med_quantity'))
+            flash('Lưu phiếu khám bệnh thành công!!!')
             session.pop('medical_reports', None)
             session.pop('medical_report_medicine', None)
             session.pop('medical_report_save', None)
-            flash('Lưu phiếu khám bệnh thành công!!!')
             return redirect('/medical-report')
         except Exception as ex:
             print(ex)
@@ -390,7 +390,6 @@ def delete_med_in_report():
     session[key] = medical_report_medicine
     res = make_response(jsonify(medical_report_medicine), 200)
     return res
-
 
 ###################################################
 
